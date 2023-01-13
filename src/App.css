@@ -37,7 +37,7 @@
   background-color: #FFF3CE
 }
 
-.roll-dice-btn {
+.btn {
   border: 1px solid black;
   padding: 5px;
   height: 2rem;
@@ -47,6 +47,17 @@
   font-weight: bold;
   cursor: pointer;
   transition-duration: 0.5s;
+  margin-right: 1rem;
+}
+
+.submit-btn {
+  border: 1px solid transparent;
+  background-color: #b4f53b;
+}
+
+.submit-btn:hover {
+  background-color:#76b501;
+  color: white;
 }
 
 .roll-dice-btn:hover {
