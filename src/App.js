@@ -1,25 +1,27 @@
-import logo from './logo.svg';
 import './App.css';
+import Dice from './Dice';
+import Player from './Player';
+import { useState } from 'react';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	const [dice, setDice] = useState([
+		{id: 1, value: 1},
+		{id: 2, value: 1},
+		{id: 3, value: 1},
+		{id: 4, value: 1},
+		{id: 5, value: 1},
+	]);
+	return (
+		<>
+			<div className='dice-container'>
+				{dice.map(die => {
+					const {id, value} = die;
+					return <Dice key={id} value={value}/>
+				})}
+			</div>
+			<Player/>
+		</>
+	);
 }
 
 export default App;
