@@ -19,6 +19,7 @@ function App() {
 			points: 0,
 			health: 10,
 			inTokyo: false,
+			isTurn: true,
     },
 		{
 			id: 2,
@@ -26,8 +27,16 @@ function App() {
 			points: 0,
 			health: 10,
 			inTokyo: false,
+			isTurn: false,
     }
-	])
+	]);
+
+	const rollDice = () => {
+		setDice(dice.map(die => {
+			let newValue = Math.floor(Math.random() * 5) + 1;
+			return {id: die.id, value: newValue};
+		}))
+	}
 
 	return (
 		<>
@@ -36,10 +45,13 @@ function App() {
 					const {id, value} = die;
 					return <Dice key={id} value={value}/>
 				})}
+				<button onClick={rollDice} className='roll-dice-btn'>Roll dice</button>
 			</div>
 			<div className='players-container'>
 				{players.map(player => {
-					return <Player key={player.id} {...player}/>
+					if (player.isTurn) {
+						return <Player key={player.id} {...player}/>
+					}
 				})}
 			</div>
 		</>

@@ -26,3 +26,20 @@
   padding-left: 10px;
   background-color: #FFF3CE
 }
+
+.roll-dice-btn {
+  border: 1px solid black;
+  padding: 5px;
+  height: 2rem;
+  margin-top: 3rem;
+  background-color: white;
+  border-radius: 3px;
+  font-weight: bold;
+  cursor: pointer;
+  transition-duration: 0.5s;
+}
+
+.roll-dice-btn:hover {
+  background-color: rgb(115, 211, 251);
+  transition-duration: 0.5s;
+}
