@@ -1,74 +1,119 @@
 .dice {
-  background-color: rgb(174, 251, 58);
-  width: 4rem;
-  height: 4rem;
-  text-align: center;
-  border-radius: 0.25rem;
-  margin: 1rem;
-  border: solid 2px transparent;
-  cursor: pointer;
-  transition: 0.5s;
+	background-color: rgb(174, 251, 58);
+	width: 4rem;
+	height: 4rem;
+	text-align: center;
+	border-radius: 0.25rem;
+	margin: 0.5rem;
+	border: solid 2px transparent;
+	cursor: pointer;
+	transition: 0.5s;
 }
 
 .dice:hover {
-  background-color: rgb(153, 222, 51);
-  transition: 0.5s;
+	background-color: rgb(153, 222, 51);
+	transition: 0.5s;
 }
 
 .dice-number {
-  font-weight: bold;
-  margin: auto;
-  padding-top: 0.6rem;
-  font-size: 2rem;
-  height: 100%;
-  width: 100%;
+	font-weight: bold;
+	margin: auto;
+	padding-top: 0.6rem;
+	font-size: 2rem;
+	height: 100%;
+	width: 100%;
 }
 
 .dice-container {
-  display: flex;
+	display: flex;
+	flex-wrap: wrap;
+	width: 16rem;
+	margin: 0 auto;
 }
 
+
+
+/* @media (min-width: 600px) {
+	.dice {
+		margin: 1rem;
+	}
+} */
+
 .player-container {
-  margin: 10px;
-  border: 1px solid #ccc;
-  max-width: 10rem;
-  border-radius: 10px;
-  padding-left: 10px;
-  background-color: #FFF3CE
+	margin: 10px;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	padding-left: 10px;
+	background-color: #FFF3CE;
+	margin: 1rem;
+	width: 10rem;
+}
+
+.players-container {
+	width: 28rem;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	margin: 2rem auto;
 }
 
 .btn {
-  border: 1px solid black;
-  padding: 5px;
-  height: 2rem;
-  margin-top: 3rem;
-  background-color: white;
-  border-radius: 3px;
-  font-weight: bold;
-  cursor: pointer;
-  transition-duration: 0.5s;
-  margin-right: 1rem;
+	border: 1px solid black;
+	height: 2.6rem;
+	margin-top: 1rem;
+	width: 8rem;
+	background-color: white;
+	border-radius: 3px;
+	font-weight: bold;
+	cursor: pointer;
+	transition-duration: 0.5s;
+	margin-right: 1rem;
+	font-size: 1rem;
+	text-align: center;
 }
 
 .submit-btn {
-  border: 1px solid transparent;
-  background-color: #b4f53b;
+	border: 1px solid transparent;
+	background-color: #b4f53b;
 }
 
 .submit-btn:hover {
-  background-color:#76b501;
-  color: white;
+	background-color:#76b501;
+	color: white;
 }
 
 .roll-dice-btn:hover {
-  background-color: rgb(115, 211, 251);
-  transition-duration: 0.5s;
+	background-color: rgb(115, 211, 251);
+	transition-duration: 0.5s;
 }
 
 .die-selected {
-  border: solid 2px gray;
+	border: solid 2px gray;
+	background-color: rgb(153, 222, 51);
 }
 
 .player-is-turn {
-  background-color: #ffcd36
+	background-color: #ffcd36
+}
+
+.btn-container {
+	margin: 0 auto;
+	width: 8rem;
+}
+
+.app-container {
+	width: 100%;
+}
+
+
+@media (min-width: 600px) {
+	.dice-container {
+		display: flex;
+		width: 35rem;
+	}
+
+	.btn-container {
+		width: 20rem;
+		display: flex;
+	}
 }

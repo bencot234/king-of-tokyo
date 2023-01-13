@@ -89,7 +89,7 @@ function App() {
 	}
 
 	return (
-		<>
+		<div className='app-container'>
 			<div className='dice-container'>
 				{dice.map(die => {
 					const {id, value} = die;
@@ -101,6 +101,8 @@ function App() {
 						setDice={setDice}
 					/>
 				})}
+			</div>
+			<div className='btn-container'>
 				<button onClick={rollDice} className='btn roll-dice-btn'>Roll dice</button>
 				<button className='btn submit-btn' onClick={handleSubmit}>Submit</button>
 			</div>
@@ -110,7 +112,7 @@ function App() {
 					return <Player key={player.id} {...player}/>
 				})}
 			</div>
-		</>
+		</div>
 	);
 }
 
