@@ -11,6 +11,24 @@ function App() {
 		{id: 4, value: 1},
 		{id: 5, value: 1},
 	]);
+
+	const [players, setPlayers] = useState([
+		{
+			id: 1,
+			name: 'player 1',
+			points: 0,
+			health: 10,
+			inTokyo: false,
+    },
+		{
+			id: 2,
+			name: 'player 2',
+			points: 0,
+			health: 10,
+			inTokyo: false,
+    }
+	])
+
 	return (
 		<>
 			<div className='dice-container'>
@@ -19,7 +37,11 @@ function App() {
 					return <Dice key={id} value={value}/>
 				})}
 			</div>
-			<Player/>
+			<div className='players-container'>
+				{players.map(player => {
+					return <Player key={player.id} {...player}/>
+				})}
+			</div>
 		</>
 	);
 }

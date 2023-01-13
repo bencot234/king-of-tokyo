@@ -17,3 +17,12 @@
 .dice-container {
   display: flex;
 }
+
+.player-container {
+  margin: 10px;
+  border: 1px solid #ccc;
+  max-width: 10rem;
+  border-radius: 10px;
+  padding-left: 10px;
+  background-color: #FFF3CE
+}
