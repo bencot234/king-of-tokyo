@@ -14,6 +14,8 @@ function App() {
 		{id: 6, value: 1, selected: false},
 	]);
 
+	const [currentPlayerId, setCurrentPlayerId] = useState(1)
+
 	const [players, setPlayers] = useState([
 		{
 			id: 1,
@@ -30,7 +32,15 @@ function App() {
 			health: 10,
 			inTokyo: false,
 			isTurn: false,
-		}
+		},
+		{
+			id: 3,
+			name: 'player 3',
+			points: 0,
+			health: 10,
+			inTokyo: false,
+			isTurn: false,
+		},
 	]);
 
 	const rollDice = () => {
@@ -60,13 +70,22 @@ function App() {
 		
 		setPlayers(
 			players.map((player) => {
-				if (player.id === 1)
+				if (player.id === currentPlayerId)
 				{
 					return {...player, points: player.points + pointsGained};
 				}
 				return player;
 			})
 		);
+
+		
+		if (currentPlayerId === players.length) {
+			setCurrentPlayerId(1);
+		} else {
+			setCurrentPlayerId(currentPlayerId => currentPlayerId + 1)
+		}
+
+		// players.map(player => player.id)
 	}
 
 	return (
@@ -87,9 +106,8 @@ function App() {
 			</div>
 			<div className='players-container'>
 				{players.map(player => {
-					if (player.isTurn) {
-						return <Player key={player.id} {...player}/>
-					}
+					player.isTurn = player.id === currentPlayerId;
+					return <Player key={player.id} {...player}/>
 				})}
 			</div>
 		</>

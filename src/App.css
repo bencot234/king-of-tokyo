@@ -68,3 +68,7 @@
 .die-selected {
   border: solid 2px gray;
 }
+
+.player-is-turn {
+  background-color: #ffcd36
+}
