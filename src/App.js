@@ -2,6 +2,8 @@ import './App.css';
 import Dice from './Dice';
 import Player from './Player';
 import { useState } from 'react';
+import { AiFillHeart } from 'react-icons/ai';
+import { FaPaw } from 'react-icons/fa';
 
 function App() {
 	const [dice, setDice] = useState([
@@ -34,6 +36,8 @@ function App() {
 	const rollDice = () => {
 		setDice(dice.map(die => {
 			let newValue = Math.floor(Math.random() * 5) + 1;
+			if (newValue === 4) newValue = <AiFillHeart/>
+			if (newValue === 5) newValue = <FaPaw/>
 			return {id: die.id, value: newValue};
 		}))
 	}
