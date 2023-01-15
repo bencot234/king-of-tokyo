@@ -1,4 +1,5 @@
 import './App.css';
+import Die from './Die';
 import Dice from './Dice';
 import Player from './Player';
 import { useState } from 'react';
@@ -14,7 +15,7 @@ function App() {
 		{id: 6, value: 1, selected: false},
 	]);
 
-	const [currentPlayerId, setCurrentPlayerId] = useState(1)
+	const [currentPlayerId, setCurrentPlayerId] = useState(1);
 
 	const [players, setPlayers] = useState([
 		{
@@ -22,7 +23,7 @@ function App() {
 			name: 'player 1',
 			points: 0,
 			health: 10,
-			inTokyo: false,
+			inTokyo: true,
 			isTurn: true,
 		},
 		{
@@ -54,6 +55,47 @@ function App() {
 	}
 
 	const handleSubmit = () => {
+		const [currentPlayer] = players.filter((player) => player.id === currentPlayerId);
+		let updatedPlayers = players;
+		if (currentPlayer.inTokyo) {
+			updatedPlayers = players.map((player) => {
+				if (player.id === currentPlayerId) {
+					return {...player, points: player.points + pointsGained()};
+				}
+				return {...player, health: player.health - damageDealt()};
+			})
+		} else if (!currentPlayer.inToyko) {
+			updatedPlayers = players.map((player) => {
+				if (player.id === currentPlayerId) {
+					return {...player, points: player.points + pointsGained()};
+				}
+				if (player.inTokyo) {
+					return {...player, health: player.health - damageDealt()};
+				}
+				return player;
+			})
+		}
+		setPlayers(updatedPlayers);
+		nextPlayer();
+	}
+
+	const nextPlayer = () => {
+		if (currentPlayerId === players.length) {
+			setCurrentPlayerId(1);
+		} else {
+			setCurrentPlayerId(currentPlayerId => currentPlayerId + 1)
+		}
+	}
+
+	const damageDealt = () => {
+		let damageDealt = 0;
+		dice.map(die => {
+			if (die.value === 5) damageDealt += 1;
+		});
+		return damageDealt;
+	}
+
+	const pointsGained = () => {
 		let pointsGained = 0;
 		let totalOnes = 0;
 		let totalTwos = 0;
@@ -67,41 +109,13 @@ function App() {
 		if (totalOnes >= 3) pointsGained += (totalOnes - 2);
 		if (totalTwos >= 3) pointsGained += (totalTwos - 1);
 		if (totalThrees >= 3) pointsGained += totalThrees;
-		
-		setPlayers(
-			players.map((player) => {
-				if (player.id === currentPlayerId)
-				{
-					return {...player, points: player.points + pointsGained};
-				}
-				return player;
-			})
-		);
 
-		
-		if (currentPlayerId === players.length) {
-			setCurrentPlayerId(1);
-		} else {
-			setCurrentPlayerId(currentPlayerId => currentPlayerId + 1)
-		}
-
-		// players.map(player => player.id)
+		return pointsGained;
 	}
 
 	return (
 		<div className='app-container'>
-			<div className='dice-container'>
-				{dice.map(die => {
-					const {id, value} = die;
-					return <Dice 
-						key={id} 
-						id={id} 
-						dieValue={value} 
-						dice={dice} 
-						setDice={setDice}
-					/>
-				})}
-			</div>
+			<Dice dice={dice} setDice={setDice}/>
 			<div className='btn-container'>
 				<button onClick={rollDice} className='btn roll-dice-btn'>Roll dice</button>
 				<button className='btn submit-btn' onClick={handleSubmit}>Submit</button>
