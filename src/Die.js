@@ -2,20 +2,18 @@ import { AiFillHeart } from 'react-icons/ai';
 import { FaPaw } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 
-const Die = ({id, dieValue, dice, setDice}) => {
+const Die = ({id, dieValue, dice, setDice, selected, numRolls}) => {
 
-    const [dieSelected, setDieSelected] = useState(false);
-
-    useEffect(() => {
-        setDice(
-            dice.map(die => {
+    const isSelected = () => {
+        setDice(dice => {
+            return dice.map(die => {
                 if (die.id === id) {
-                    return {...die, selected: dieSelected};
+                    return {...die, selected: !selected};
                 }
                 return die;
             })
-        );
-    }, [dieSelected]);
+        });
+    }
  
     const displayValue = (dieValue) => {
         if (dieValue === 4) dieValue = <AiFillHeart/>
@@ -23,9 +21,13 @@ const Die = ({id, dieValue, dice, setDice}) => {
         return dieValue;
     }
 
-    return <div className={`dice ${dieSelected ? 'die-selected' : ''}`} onClick={() => setDieSelected(!dieSelected)}>
+    return <button 
+        className={`dice ${selected ? 'die-selected' : ''}`} 
+        disabled={numRolls === 3} 
+        onClick={isSelected}
+    >
         <p className='dice-number'>{displayValue(dieValue)}</p>
-    </div>;
+    </button>;
 }
 
 export default Die;

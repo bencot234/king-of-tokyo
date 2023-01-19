@@ -49,13 +49,17 @@ function App() {
 	useEffect(() => {
 		setPlayerInTokyo(players.find(p => p.id === playerInTokyoId));
 		setCurrentPlayer(players.find(p => p.id === currentPlayerId))
-	}, [playerInTokyoId])
+	}, [players])
 
 
 	const handleSubmit = () => {
-		const [player] = players.filter((player) => player.id === currentPlayerId);
+		const player = players.find((player) => player.id === currentPlayerId);
 		let updatedPlayers = players;
-		let currentPlayer = {...player, points: player.points + pointsGained()};
+		let currentPlayer = {
+			...player, 
+			points: player.points += pointsGained(),
+			health: player.health += healthGained(),
+		};
 		setPrevPlayerId(currentPlayerId);
 
 		if (currentPlayer.inTokyo) {
@@ -90,6 +94,9 @@ function App() {
 		setPlayers(updatedPlayers);
 		nextPlayer();
 		setNumRolls(3);
+		setDice(dice.map(die => {
+			return {...die, selected: false};
+		}));
 	}
 
 	useEffect(() => {
@@ -140,6 +147,17 @@ function App() {
 		return pointsGained;
 	}
 
+	const healthGained = () => {
+		console.log(currentPlayer.health);
+		if (currentPlayer.inTokyo || currentPlayer.health >= 10) return 0;
+		let healthGained = 0;
+		dice.map(die => {
+			if (die.value === 5) healthGained += 1;
+		});
+		
+		return healthGained;
+	}
+
 	const handleYield = () => {
 		setShowYieldQuestion(false);
 		setPlayers(
@@ -160,9 +178,9 @@ function App() {
 		<>
 			<SelectPlayers setPlayers={setPlayers} players={players} setShowGame={setShowGame}/>
 			<Winner name={winner} showWinner={showWinner}/>
-			<YieldQuestion name={ playerInTokyo ? playerInTokyo.name : ''} showYieldQuestion={showYieldQuestion} setShowYieldQuestion={setShowYieldQuestion} handleYield={handleYield}/>
+			<YieldQuestion name={ playerInTokyo ? playerInTokyo.name : ''} showYieldQuestion={showYieldQuestion} setShowYieldQuestion={setShowYieldQuestion} handleYield={handleYield} winner={winner}/>
 			<div className={`${showGame ? (!winner ? 'app-container' : 'app-container blur') : 'hide'}`}>
-				<Dice dice={dice} setDice={setDice}/>
+				<Dice dice={dice} setDice={setDice} numRolls={numRolls}/>
 				<div className='btn-container'>
 					<button onClick={rollDice} className='btn general-btn' disabled={numRolls === 0}>Roll Dice</button>
 					<button className='btn submit-btn' disabled={numRolls === 3} onClick={handleSubmit}>Submit</button>
