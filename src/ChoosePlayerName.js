@@ -23,7 +23,7 @@ const ChoosePlayerName = ({playerID, setPlayerID, players, setPlayers, setShowFo
 
     }
 	return (
-		<div className={`${show ? '' : 'hide'}`}>
+		<div className={`${show ? 'choose-player-name-container' : 'hide'}`}>
 			<h1>Choose name for Player {playerID}</h1>
 			<form onSubmit={handleSubmit}>
 				<input 

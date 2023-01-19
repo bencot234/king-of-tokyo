@@ -32,7 +32,7 @@ const SelectPlayers = ({setPlayers, players, setShowGame}) => {
     }, [playerID])
 
     return <div className={`${showForms ? 'select-players-container' : 'hide'}`}>
-        <div className={`${showForm ? 'hide' : ''}`}>
+        <div className={`${showForm ? 'hide' : 'select-num-players'}`}>
             <h1>Select number of players</h1>
             <button className="btn general-btn" onClick={() => handleNumPlayers(2)}>2</button>
             <button className="btn general-btn" onClick={() => handleNumPlayers(3)}>3</button>

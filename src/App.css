@@ -31,20 +31,11 @@
 	margin: 0 auto;
 }
 
-
-
-/* @media (min-width: 600px) {
-	.dice {
-		margin: 1rem;
-	}
-} */
-
 .player-container {
 	margin: 10px;
 	border: 1px solid #ccc;
 	border-radius: 10px;
 	padding-left: 10px;
-	/* background-color: #FFF3CE; */
 	margin: 1rem;
 	width: 10rem;
 	color: #ccc;
@@ -121,7 +112,7 @@
 	}
 }
 
-.select-players-container {
+.select-players-container, .winner-container {
 	position: absolute;
 	top: 20%;
 	left: 50%;
@@ -153,4 +144,27 @@ input {
 
 .heart {
 	color: red;
+}
+
+.choose-player-name-container, .select-num-players {
+	text-align: center;
+	background-color: #fcfcf0;
+	border: solid 2px rgb(153, 222, 51);
+	color: black;
+	padding: 1rem 2rem;
+	border-radius: 1rem;
+	width: 30rem;
+}
+
+.board {
+	text-align: center;
+}
+
+.winner-container {
+	top: 55%;
+	font-size: 2rem;
+	font-weight: bold;
+	padding: 3rem 4rem;
+	border: solid 2px rgb(153, 222, 51);
+	background-color: #fcfcf0;
 }

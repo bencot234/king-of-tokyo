@@ -5,6 +5,8 @@ import Player from './Player';
 import SelectPlayers from './SelectPlayers';
 import { useState, useEffect } from 'react';
 import { useGlobalContext } from './context';
+import Winner from './Winner';
+import board from './images/king-of-tokyo-board.jpeg';
 
 function App() {
 	const [dice, setDice] = useState([
@@ -15,6 +17,9 @@ function App() {
 		{id: 5, value: 1, selected: false},
 		{id: 6, value: 1, selected: false},
 	]);
+
+	const [showWinner, setShowWinner] = useState(false);
+	const [winner, setWinner] = useState(null);
 
 	const [currentPlayerId, setCurrentPlayerId] = useState(1);
 	const [showGame, setShowGame] = useState(false);
@@ -40,6 +45,7 @@ function App() {
 				if (player.id === currentPlayerId) {
 					return {...player, points: player.points + pointsGained()};
 				}
+		
 				return {...player, health: player.health - damageDealt()};
 			})
 		} else if (!currentPlayer.inToyko) {
@@ -50,25 +56,28 @@ function App() {
 				if (player.inTokyo) {
 					return {...player, health: player.health - damageDealt()};
 				}
+			
 				return player;
 			})
 		}
 		setPlayers(updatedPlayers);
-		checkWinner([currentPlayer]);
+		// checkWinner(currentPlayerId);
 		nextPlayer();
 	}
 
 	useEffect(() => {
-		checkWinner(currentPlayerId);
+		checkWinner(players);
 	}, [players])
 
-	const checkWinner = (currentPlayer) => {
+	const checkWinner = (players) => {
 		// const [currentPlayer] = players.filter(player => player.id === currentPlayerId);
-		// console.log(currentPlayer.points);
-		if (currentPlayer.points >= 20) {
-			console.log(currentPlayer.name + ' is the winner!')
-			// setWinMessage(`${currentPlayer.name} is the winner!`)
-		}
+		players.map(player => {
+			if (player.points >= 20) {
+				setCurrentPlayerId(player.id)
+				setWinner(player.name);
+				setShowWinner(true);
+			}
+		})
 	}
 
 	const nextPlayer = () => {
@@ -108,7 +117,8 @@ function App() {
 	return (
 		<>
 			<SelectPlayers setPlayers={setPlayers} players={players} setShowGame={setShowGame}/>
-			<div className={`${showGame ? 'app-container' : 'hide'}`}>
+			<Winner name={winner} showWinner={showWinner}/>
+			<div className={`${showGame ? (!winner ? 'app-container' : 'app-container blur') : 'hide'}`}>
 				<Dice dice={dice} setDice={setDice}/>
 				<div className='btn-container'>
 					<button onClick={rollDice} className='btn general-btn'>Roll Dice</button>
@@ -119,6 +129,9 @@ function App() {
 						player.isTurn = player.id === currentPlayerId;
 						return <Player key={player.id} {...player}/>
 					})}
+				</div>
+				<div className="board">
+					<img src={board} alt="" />
 				</div>
 			</div>
 		</>
