@@ -28,11 +28,11 @@ function App() {
 	const [currentPlayerId, setCurrentPlayerId] = useState(1);
 	const [showGame, setShowGame] = useState(false);
 	const [playerInTokyoId, setPlayerInTokyoId] = useState(null);
-	const [playerInTokyoName, setPlayerInTokyoName] = useState(null);
 	const [playerInTokyo, setPlayerInTokyo] = useState(null);
 	const [players, setPlayers] = useState([]);
 	const [currentPlayer, setCurrentPlayer] = useState({});
 	const [prevPlayerId, setPrevPlayerId] = useState(null);
+	const [numRolls, setNumRolls] = useState(3);
 	
 	const rollDice = () => {
 		setDice(dice.map(die => {
@@ -42,6 +42,8 @@ function App() {
 			}
 			return die;
 		}))
+		let rollsLeft = numRolls === 0 ? 3 : numRolls - 1;
+		setNumRolls(rollsLeft);
 	}
 
 	useEffect(() => {
@@ -87,6 +89,7 @@ function App() {
 		}
 		setPlayers(updatedPlayers);
 		nextPlayer();
+		setNumRolls(3);
 	}
 
 	useEffect(() => {
@@ -161,8 +164,8 @@ function App() {
 			<div className={`${showGame ? (!winner ? 'app-container' : 'app-container blur') : 'hide'}`}>
 				<Dice dice={dice} setDice={setDice}/>
 				<div className='btn-container'>
-					<button onClick={rollDice} className='btn general-btn'>Roll Dice</button>
-					<button className='btn submit-btn' onClick={handleSubmit}>Submit</button>
+					<button onClick={rollDice} className='btn general-btn' disabled={numRolls === 0}>Roll Dice</button>
+					<button className='btn submit-btn' disabled={numRolls === 3} onClick={handleSubmit}>Submit</button>
 				</div>
 				<div className='players-container'>
 					{players.map(player => {
@@ -171,7 +174,7 @@ function App() {
 					})}
 				</div>
 				<div className="board">
-					<img src={board} alt="" />
+					<img src={board} alt="king of tokyo board" />
 				</div>
 			</div>
 		</>
