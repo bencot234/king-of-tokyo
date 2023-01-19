@@ -27,10 +27,6 @@ const SelectPlayers = ({setPlayers, players, setShowGame}) => {
         setPlayers(totalPlayers);
     }
 
-    useEffect(() => {
-        console.log(players)
-    }, [playerID])
-
     return <div className={`${showForms ? 'select-players-container' : 'hide'}`}>
         <div className={`${showForm ? 'hide' : 'select-num-players'}`}>
             <h1>Select number of players</h1>

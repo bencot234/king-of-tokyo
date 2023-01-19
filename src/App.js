@@ -6,6 +6,7 @@ import SelectPlayers from './SelectPlayers';
 import { useState, useEffect } from 'react';
 import { useGlobalContext } from './context';
 import Winner from './Winner';
+import YieldQuestion from './YieldQuestion';
 import board from './images/king-of-tokyo-board.jpeg';
 
 function App() {
@@ -18,14 +19,20 @@ function App() {
 		{id: 6, value: 1, selected: false},
 	]);
 
+	const [tokyoOccupied, setTokyoOccupied] = useState(false);
+
 	const [showWinner, setShowWinner] = useState(false);
 	const [winner, setWinner] = useState(null);
+	const [showYieldQuestion, setShowYieldQuestion] = useState(false);
 
 	const [currentPlayerId, setCurrentPlayerId] = useState(1);
 	const [showGame, setShowGame] = useState(false);
-	
+	const [playerInTokyoId, setPlayerInTokyoId] = useState(null);
+	const [playerInTokyoName, setPlayerInTokyoName] = useState(null);
+	const [playerInTokyo, setPlayerInTokyo] = useState(null);
 	const [players, setPlayers] = useState([]);
-	// const [currentPlayer, setCurrentPlayer] = useState(players.filter(p => p.id === currentPlayerId));
+	const [currentPlayer, setCurrentPlayer] = useState({});
+	const [prevPlayerId, setPrevPlayerId] = useState(null);
 	
 	const rollDice = () => {
 		setDice(dice.map(die => {
@@ -37,21 +44,39 @@ function App() {
 		}))
 	}
 
+	useEffect(() => {
+		setPlayerInTokyo(players.find(p => p.id === playerInTokyoId));
+		setCurrentPlayer(players.find(p => p.id === currentPlayerId))
+	}, [playerInTokyoId])
+
+
 	const handleSubmit = () => {
-		const [currentPlayer] = players.filter((player) => player.id === currentPlayerId);
+		const [player] = players.filter((player) => player.id === currentPlayerId);
 		let updatedPlayers = players;
+		let currentPlayer = {...player, points: player.points + pointsGained()};
+		setPrevPlayerId(currentPlayerId);
+
 		if (currentPlayer.inTokyo) {
 			updatedPlayers = players.map((player) => {
 				if (player.id === currentPlayerId) {
-					return {...player, points: player.points + pointsGained()};
+					return currentPlayer;
 				}
 		
 				return {...player, health: player.health - damageDealt()};
 			})
 		} else if (!currentPlayer.inToyko) {
+
+			if (!tokyoOccupied && damageDealt() > 0) {
+				setPlayerInTokyoId(currentPlayerId);
+				setTokyoOccupied(true);
+				currentPlayer = {...currentPlayer, inTokyo: true};
+			}
+			if (tokyoOccupied && damageDealt() > 0) {
+				setShowYieldQuestion(true);
+			}
 			updatedPlayers = players.map((player) => {
 				if (player.id === currentPlayerId) {
-					return {...player, points: player.points + pointsGained()};
+					return currentPlayer;
 				}
 				if (player.inTokyo) {
 					return {...player, health: player.health - damageDealt()};
@@ -61,7 +86,6 @@ function App() {
 			})
 		}
 		setPlayers(updatedPlayers);
-		// checkWinner(currentPlayerId);
 		nextPlayer();
 	}
 
@@ -70,7 +94,6 @@ function App() {
 	}, [players])
 
 	const checkWinner = (players) => {
-		// const [currentPlayer] = players.filter(player => player.id === currentPlayerId);
 		players.map(player => {
 			if (player.points >= 20) {
 				setCurrentPlayerId(player.id)
@@ -114,10 +137,27 @@ function App() {
 		return pointsGained;
 	}
 
+	const handleYield = () => {
+		setShowYieldQuestion(false);
+		setPlayers(
+			players.map(player => {
+				if (player.id === playerInTokyoId) {
+					return {...player, inTokyo: false}
+				}
+				if (player.id === prevPlayerId) {
+					return {...player, inTokyo: true}
+				}
+				return player;
+			}) 
+		);
+		setPlayerInTokyoId(prevPlayerId);
+	}
+
 	return (
 		<>
 			<SelectPlayers setPlayers={setPlayers} players={players} setShowGame={setShowGame}/>
 			<Winner name={winner} showWinner={showWinner}/>
+			<YieldQuestion name={ playerInTokyo ? playerInTokyo.name : ''} showYieldQuestion={showYieldQuestion} setShowYieldQuestion={setShowYieldQuestion} handleYield={handleYield}/>
 			<div className={`${showGame ? (!winner ? 'app-container' : 'app-container blur') : 'hide'}`}>
 				<Dice dice={dice} setDice={setDice}/>
 				<div className='btn-container'>
