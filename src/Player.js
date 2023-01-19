@@ -6,8 +6,8 @@ const Player = ({id, name, points, health, inTokyo, isTurn}) => {
     return (
         <div className={`player-container ${isTurn ? 'player-is-turn' : ''}`}>
             <h2>{name}</h2>
-            <p><FaStar/> {points}</p>
-            <p><AiFillHeart/> {health}</p>
+            <p><FaStar className={`${isTurn ? 'star' : ''}`}/> {points}</p>
+            <p><AiFillHeart className={`${isTurn ? 'heart' : ''}`}/> {health}</p>
         </div>
     );
 }

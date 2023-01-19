@@ -1,4 +1,6 @@
+import React from 'react';
 import players from './players';
+import { useContext } from 'react';
 const AppContext = React.createContext();
 
 const state = {
@@ -6,6 +8,15 @@ const state = {
 }
 
 const AppProvider = ({ children }) => {
+    // const setNumPlayers = () => {
+
+    // }
+    // const setPlayerName = (id) => {
+
+    // }
+    // const rollDice = () => {
+
+    // }
     return (
         <AppContext.Provider
             value={{

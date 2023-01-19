@@ -2,8 +2,9 @@ import './App.css';
 import Die from './Die';
 import Dice from './Dice';
 import Player from './Player';
-import { useState } from 'react';
-
+import SelectPlayers from './SelectPlayers';
+import { useState, useEffect } from 'react';
+import { useGlobalContext } from './context';
 
 function App() {
 	const [dice, setDice] = useState([
@@ -16,34 +17,11 @@ function App() {
 	]);
 
 	const [currentPlayerId, setCurrentPlayerId] = useState(1);
-
-	const [players, setPlayers] = useState([
-		{
-			id: 1,
-			name: 'player 1',
-			points: 0,
-			health: 10,
-			inTokyo: true,
-			isTurn: true,
-		},
-		{
-			id: 2,
-			name: 'player 2',
-			points: 0,
-			health: 10,
-			inTokyo: false,
-			isTurn: false,
-		},
-		{
-			id: 3,
-			name: 'player 3',
-			points: 0,
-			health: 10,
-			inTokyo: false,
-			isTurn: false,
-		},
-	]);
-
+	const [showGame, setShowGame] = useState(false);
+	
+	const [players, setPlayers] = useState([]);
+	// const [currentPlayer, setCurrentPlayer] = useState(players.filter(p => p.id === currentPlayerId));
+	
 	const rollDice = () => {
 		setDice(dice.map(die => {
 			let newValue = Math.floor(Math.random() * 5) + 1;
@@ -76,7 +54,21 @@ function App() {
 			})
 		}
 		setPlayers(updatedPlayers);
+		checkWinner([currentPlayer]);
 		nextPlayer();
+	}
+
+	useEffect(() => {
+		checkWinner(currentPlayerId);
+	}, [players])
+
+	const checkWinner = (currentPlayer) => {
+		// const [currentPlayer] = players.filter(player => player.id === currentPlayerId);
+		// console.log(currentPlayer.points);
+		if (currentPlayer.points >= 20) {
+			console.log(currentPlayer.name + ' is the winner!')
+			// setWinMessage(`${currentPlayer.name} is the winner!`)
+		}
 	}
 
 	const nextPlayer = () => {
@@ -114,19 +106,22 @@ function App() {
 	}
 
 	return (
-		<div className='app-container'>
-			<Dice dice={dice} setDice={setDice}/>
-			<div className='btn-container'>
-				<button onClick={rollDice} className='btn roll-dice-btn'>Roll dice</button>
-				<button className='btn submit-btn' onClick={handleSubmit}>Submit</button>
+		<>
+			<SelectPlayers setPlayers={setPlayers} players={players} setShowGame={setShowGame}/>
+			<div className={`${showGame ? 'app-container' : 'hide'}`}>
+				<Dice dice={dice} setDice={setDice}/>
+				<div className='btn-container'>
+					<button onClick={rollDice} className='btn general-btn'>Roll Dice</button>
+					<button className='btn submit-btn' onClick={handleSubmit}>Submit</button>
+				</div>
+				<div className='players-container'>
+					{players.map(player => {
+						player.isTurn = player.id === currentPlayerId;
+						return <Player key={player.id} {...player}/>
+					})}
+				</div>
 			</div>
-			<div className='players-container'>
-				{players.map(player => {
-					player.isTurn = player.id === currentPlayerId;
-					return <Player key={player.id} {...player}/>
-				})}
-			</div>
-		</div>
+		</>
 	);
 }
 

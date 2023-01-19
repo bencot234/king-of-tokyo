@@ -44,9 +44,10 @@
 	border: 1px solid #ccc;
 	border-radius: 10px;
 	padding-left: 10px;
-	background-color: #FFF3CE;
+	/* background-color: #FFF3CE; */
 	margin: 1rem;
 	width: 10rem;
+	color: #ccc;
 }
 
 .players-container {
@@ -82,7 +83,7 @@
 	color: white;
 }
 
-.roll-dice-btn:hover {
+.general-btn:hover {
 	background-color: rgb(115, 211, 251);
 	transition-duration: 0.5s;
 }
@@ -93,7 +94,9 @@
 }
 
 .player-is-turn {
-	background-color: #ffcd36
+	background-color: #fcfcf0;
+	border: solid 2px rgb(153, 222, 51);
+	color: black;
 }
 
 .btn-container {
@@ -116,4 +119,38 @@
 		width: 20rem;
 		display: flex;
 	}
+}
+
+.select-players-container {
+	position: absolute;
+	top: 20%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: white;
+	border-radius: 10px;
+	padding: 1rem 2rem;
+}
+
+.hide {
+	display: none;
+}
+
+input {
+	border: 1px solid black;
+	height: 2.4rem;
+	margin-top: 1rem;
+	width: 8rem;
+	background-color: white;
+	border-radius: 3px;
+	margin-right: 1rem;
+	font-size: 1rem;
+	padding-left: 0.5rem;
+}
+
+.star {
+	color: #ffcc00;
+}
+
+.heart {
+	color: red;
 }
