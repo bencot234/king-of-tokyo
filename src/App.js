@@ -109,8 +109,14 @@ function App() {
 				setCurrentPlayerIndex(i);
 				setWinner(player.name);
 			}
-		})
+		});
 	}
+
+	useEffect(() => {
+		if (players.length === 1) {
+			players.find(player => setWinner(player.name));
+		}
+	}, [players])
 
 	const nextPlayer = (indexOfEliminated = null) => {
 		if (indexOfEliminated !== -1) {
@@ -138,10 +144,8 @@ function App() {
 			// for anything else, the indexes all move down, so don't need to set the index
 		} else {
 			if (currentPlayerIndex >= players.length -1) {
-				console.log('4set index to 0');
 				setCurrentPlayerIndex(0);
 			} else {
-				console.log('5set index to currentPlayerIndex + 1'+ currentPlayerIndex + parseInt(1));
 				setCurrentPlayerIndex(currentPlayerIndex + 1);
 			}
 
