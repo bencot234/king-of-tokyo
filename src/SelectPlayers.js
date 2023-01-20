@@ -8,8 +8,6 @@ const SelectPlayers = ({setPlayers, players, setShowGame}) => {
     
     const [playerID, setPlayerID] = useState(1);
 
- 
-
     const handleNumPlayers = (numPlayers) => {
         setNumPlayers(numPlayers);
         setShowForm(true);

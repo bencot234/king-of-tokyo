@@ -167,6 +167,7 @@ input {
 	padding: 3rem 4rem;
 	border: solid 2px rgb(153, 222, 51);
 	background-color: #fcfcf0;
+	text-align: center;
 }
 
 .yield-question-container {
