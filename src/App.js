@@ -1,5 +1,4 @@
 import './App.css';
-import Die from './Die';
 import Dice from './Dice';
 import Player from './Player';
 import SelectPlayers from './SelectPlayers';
@@ -22,10 +21,8 @@ function App() {
 	const [tokyoOccupied, setTokyoOccupied] = useState(false);
 	const [winner, setWinner] = useState(null);
 	const [showYieldQuestion, setShowYieldQuestion] = useState(false);
-	const [currentPlayerId, setCurrentPlayerId] = useState(1);
 	const [showGame, setShowGame] = useState(false);
 	const [players, setPlayers] = useState([]);
-	const [prevPlayerId, setPrevPlayerId] = useState(null);
 	const [prevPlayerIndex, setPrevPlayerIndex] = useState(null);
 	const [numRolls, setNumRolls] = useState(3);
 	const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
@@ -44,8 +41,6 @@ function App() {
 
 
 	const handleSubmit = () => {
-		// setting player based on currentPlayerId
-		// const player = players.find((player, i) => player.id === currentPlayerId);
 		const player = players.find((player, i) => i === currentPlayerIndex);
 		let updatedPlayers = players;
 		let currentPlayer = {
@@ -53,12 +48,10 @@ function App() {
 			points: player.points += pointsGained(),
 			health: player.health += healthGained(player),
 		};
-		// setting previous player based on currentPlayerId
 		setPrevPlayerIndex(currentPlayerIndex);
 
 		if (currentPlayer.inTokyo) {
 			updatedPlayers = players.map((player, i) => {
-				// if (player.id === currentPlayerId) {
 				if (i === currentPlayerIndex) {
 					return currentPlayer;
 				}
@@ -94,11 +87,6 @@ function App() {
 			return {...die, selected: false};
 		}));
 	}
-
-	// useEffect(() => {
-	// 	checkWinner(players);
-	// 	console.log(players);
-	// }, [players])
 
 	const checkEliminated = (players) => {
 		let eliminatedPlayer = players.find(player => player.health <= 0);
