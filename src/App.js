@@ -20,17 +20,12 @@ function App() {
 	]);
 
 	const [tokyoOccupied, setTokyoOccupied] = useState(false);
-
 	const [showWinner, setShowWinner] = useState(false);
 	const [winner, setWinner] = useState(null);
 	const [showYieldQuestion, setShowYieldQuestion] = useState(false);
-
 	const [currentPlayerId, setCurrentPlayerId] = useState(1);
 	const [showGame, setShowGame] = useState(false);
-	const [playerInTokyoId, setPlayerInTokyoId] = useState(null);
-	const [playerInTokyo, setPlayerInTokyo] = useState(null);
 	const [players, setPlayers] = useState([]);
-	const [currentPlayer, setCurrentPlayer] = useState({});
 	const [prevPlayerId, setPrevPlayerId] = useState(null);
 	const [numRolls, setNumRolls] = useState(3);
 	
@@ -46,19 +41,13 @@ function App() {
 		setNumRolls(rollsLeft);
 	}
 
-	useEffect(() => {
-		setPlayerInTokyo(players.find(p => p.id === playerInTokyoId));
-		setCurrentPlayer(players.find(p => p.id === currentPlayerId))
-	}, [players])
-
-
 	const handleSubmit = () => {
 		const player = players.find((player) => player.id === currentPlayerId);
 		let updatedPlayers = players;
 		let currentPlayer = {
 			...player, 
 			points: player.points += pointsGained(),
-			health: player.health += healthGained(),
+			health: player.health += healthGained(player),
 		};
 		setPrevPlayerId(currentPlayerId);
 
@@ -73,13 +62,10 @@ function App() {
 		} else if (!currentPlayer.inToyko) {
 
 			if (!tokyoOccupied && damageDealt() > 0) {
-				setPlayerInTokyoId(currentPlayerId);
 				setTokyoOccupied(true);
 				currentPlayer = {...currentPlayer, inTokyo: true};
 			}
-			if (tokyoOccupied && damageDealt() > 0) {
-				setShowYieldQuestion(true);
-			}
+			
 			updatedPlayers = players.map((player) => {
 				if (player.id === currentPlayerId) {
 					return currentPlayer;
@@ -90,8 +76,12 @@ function App() {
 			
 				return player;
 			})
+			if (tokyoOccupied && damageDealt() > 0) {
+				setShowYieldQuestion(true);
+			}
 		}
 		setPlayers(updatedPlayers);
+		checkEliminated(updatedPlayers);
 		nextPlayer();
 		setNumRolls(3);
 		setDice(dice.map(die => {
@@ -102,6 +92,10 @@ function App() {
 	useEffect(() => {
 		checkWinner(players);
 	}, [players])
+
+	const checkEliminated = (players) => {
+		setPlayers(players.filter(player => player.health > 0));
+	}
 
 	const checkWinner = (players) => {
 		players.map(player => {
@@ -147,12 +141,11 @@ function App() {
 		return pointsGained;
 	}
 
-	const healthGained = () => {
-		console.log(currentPlayer.health);
-		if (currentPlayer.inTokyo || currentPlayer.health >= 10) return 0;
+	const healthGained = (player) => {
+		if (player.inTokyo || player.health >= 10) return 0;
 		let healthGained = 0;
 		dice.map(die => {
-			if (die.value === 5) healthGained += 1;
+			if (die.value === 4) healthGained += 1;
 		});
 		
 		return healthGained;
@@ -162,7 +155,7 @@ function App() {
 		setShowYieldQuestion(false);
 		setPlayers(
 			players.map(player => {
-				if (player.id === playerInTokyoId) {
+				if (player.inTokyo) {
 					return {...player, inTokyo: false}
 				}
 				if (player.id === prevPlayerId) {
@@ -171,14 +164,21 @@ function App() {
 				return player;
 			}) 
 		);
-		setPlayerInTokyoId(prevPlayerId);
+	}
+
+	const playerInTokyoName = () => {
+		const playerInTokyo = players.find(player => player.inTokyo);
+		if (playerInTokyo) {
+			return playerInTokyo.name;
+		}
+		return;
 	}
 
 	return (
 		<>
 			<SelectPlayers setPlayers={setPlayers} players={players} setShowGame={setShowGame}/>
 			<Winner name={winner} showWinner={showWinner}/>
-			<YieldQuestion name={ playerInTokyo ? playerInTokyo.name : ''} showYieldQuestion={showYieldQuestion} setShowYieldQuestion={setShowYieldQuestion} handleYield={handleYield} winner={winner}/>
+			<YieldQuestion name={ playerInTokyoName() } showYieldQuestion={showYieldQuestion} setShowYieldQuestion={setShowYieldQuestion} handleYield={handleYield} winner={winner}/>
 			<div className={`${showGame ? (!winner ? 'app-container' : 'app-container blur') : 'hide'}`}>
 				<Dice dice={dice} setDice={setDice} numRolls={numRolls}/>
 				<div className='btn-container'>
