@@ -1,5 +1,5 @@
-const Winner = ({name, showWinner}) => {
-    return <div className={`${showWinner ? "winner-container" : 'hide'}`}>
+const Winner = ({name}) => {
+    return <div className={`${name ? "winner-container" : 'hide'}`}>
         <p>{name} is the winner!</p>
     </div>
 }

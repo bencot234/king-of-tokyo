@@ -20,14 +20,15 @@ function App() {
 	]);
 
 	const [tokyoOccupied, setTokyoOccupied] = useState(false);
-	const [showWinner, setShowWinner] = useState(false);
 	const [winner, setWinner] = useState(null);
 	const [showYieldQuestion, setShowYieldQuestion] = useState(false);
 	const [currentPlayerId, setCurrentPlayerId] = useState(1);
 	const [showGame, setShowGame] = useState(false);
 	const [players, setPlayers] = useState([]);
 	const [prevPlayerId, setPrevPlayerId] = useState(null);
+	const [prevPlayerIndex, setPrevPlayerIndex] = useState(null);
 	const [numRolls, setNumRolls] = useState(3);
+	const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
 	
 	const rollDice = () => {
 		setDice(dice.map(die => {
@@ -41,19 +42,24 @@ function App() {
 		setNumRolls(rollsLeft);
 	}
 
+
 	const handleSubmit = () => {
-		const player = players.find((player) => player.id === currentPlayerId);
+		// setting player based on currentPlayerId
+		// const player = players.find((player, i) => player.id === currentPlayerId);
+		const player = players.find((player, i) => i === currentPlayerIndex);
 		let updatedPlayers = players;
 		let currentPlayer = {
 			...player, 
 			points: player.points += pointsGained(),
 			health: player.health += healthGained(player),
 		};
-		setPrevPlayerId(currentPlayerId);
+		// setting previous player based on currentPlayerId
+		setPrevPlayerIndex(currentPlayerIndex);
 
 		if (currentPlayer.inTokyo) {
-			updatedPlayers = players.map((player) => {
-				if (player.id === currentPlayerId) {
+			updatedPlayers = players.map((player, i) => {
+				// if (player.id === currentPlayerId) {
+				if (i === currentPlayerIndex) {
 					return currentPlayer;
 				}
 		
@@ -66,8 +72,8 @@ function App() {
 				currentPlayer = {...currentPlayer, inTokyo: true};
 			}
 			
-			updatedPlayers = players.map((player) => {
-				if (player.id === currentPlayerId) {
+			updatedPlayers = players.map((player, i) => {
+				if (i === currentPlayerIndex) {
 					return currentPlayer;
 				}
 				if (player.inTokyo) {
@@ -82,36 +88,75 @@ function App() {
 		}
 		setPlayers(updatedPlayers);
 		checkEliminated(updatedPlayers);
-		nextPlayer();
+		checkWinner(updatedPlayers);
 		setNumRolls(3);
 		setDice(dice.map(die => {
 			return {...die, selected: false};
 		}));
 	}
 
-	useEffect(() => {
-		checkWinner(players);
-	}, [players])
+	// useEffect(() => {
+	// 	checkWinner(players);
+	// 	console.log(players);
+	// }, [players])
 
 	const checkEliminated = (players) => {
-		setPlayers(players.filter(player => player.health > 0));
+		let eliminatedPlayer = players.find(player => player.health <= 0);
+		let indexOfEliminated = players.indexOf(eliminatedPlayer);
+		if (eliminatedPlayer) {
+			setShowYieldQuestion(false);
+			setPlayers(players.map((player, i) => {
+				if (i === currentPlayerIndex) {
+					return {...player, inTokyo: true};
+				}
+				return player;
+			}).filter(player => player.health > 0));
+		}
+		nextPlayer(indexOfEliminated);
 	}
 
 	const checkWinner = (players) => {
-		players.map(player => {
-			if (player.points >= 20) {
-				setCurrentPlayerId(player.id)
+		players.map((player, i) => {
+			if (player.points >= 10) {
+				setCurrentPlayerIndex(i);
 				setWinner(player.name);
-				setShowWinner(true);
 			}
 		})
 	}
 
-	const nextPlayer = () => {
-		if (currentPlayerId === players.length) {
-			setCurrentPlayerId(1);
+	const nextPlayer = (indexOfEliminated = null) => {
+		if (indexOfEliminated !== -1) {
+			if (indexOfEliminated > currentPlayerIndex) {
+				// if you kill someone with an index above yours..
+			  	if (indexOfEliminated < players.length -1) {
+					// and they are not the last player,
+					// proceed as normal to the next index
+					setCurrentPlayerIndex(currentPlayerIndex + 1);
+				} else if (indexOfEliminated === players.length -1) {
+					// if you kill the last player...
+					if (currentPlayerIndex === indexOfEliminated -1) {
+						// and you're now the last player, set index to 0
+						setCurrentPlayerIndex(0);
+					} else {
+						// if you're not now the last player, add 1 to the current index
+						setCurrentPlayerIndex(currentPlayerIndex + 1);
+					}
+				}
+			} else if (currentPlayerIndex === players.length - 1) {
+				// if you are the last player
+				// whoever you've killed, the next index will be 0
+				setCurrentPlayerIndex(0);
+			}
+			// for anything else, the indexes all move down, so don't need to set the index
 		} else {
-			setCurrentPlayerId(currentPlayerId => currentPlayerId + 1)
+			if (currentPlayerIndex >= players.length -1) {
+				console.log('4set index to 0');
+				setCurrentPlayerIndex(0);
+			} else {
+				console.log('5set index to currentPlayerIndex + 1'+ currentPlayerIndex + parseInt(1));
+				setCurrentPlayerIndex(currentPlayerIndex + 1);
+			}
+
 		}
 	}
 
@@ -154,11 +199,11 @@ function App() {
 	const handleYield = () => {
 		setShowYieldQuestion(false);
 		setPlayers(
-			players.map(player => {
+			players.map((player, i) => {
 				if (player.inTokyo) {
 					return {...player, inTokyo: false}
 				}
-				if (player.id === prevPlayerId) {
+				if (i === prevPlayerIndex) {
 					return {...player, inTokyo: true}
 				}
 				return player;
@@ -177,7 +222,7 @@ function App() {
 	return (
 		<>
 			<SelectPlayers setPlayers={setPlayers} players={players} setShowGame={setShowGame}/>
-			<Winner name={winner} showWinner={showWinner}/>
+			<Winner name={winner}/>
 			<YieldQuestion name={ playerInTokyoName() } showYieldQuestion={showYieldQuestion} setShowYieldQuestion={setShowYieldQuestion} handleYield={handleYield} winner={winner}/>
 			<div className={`${showGame ? (!winner ? 'app-container' : 'app-container blur') : 'hide'}`}>
 				<Dice dice={dice} setDice={setDice} numRolls={numRolls}/>
@@ -186,8 +231,8 @@ function App() {
 					<button className='btn submit-btn' disabled={numRolls === 3} onClick={handleSubmit}>Submit</button>
 				</div>
 				<div className='players-container'>
-					{players.map(player => {
-						player.isTurn = player.id === currentPlayerId;
+					{players.map((player, i) => {
+						player.isTurn = i === currentPlayerIndex;
 						return <Player key={player.id} {...player}/>
 					})}
 				</div>
