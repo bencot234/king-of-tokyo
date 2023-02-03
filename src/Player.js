@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { AiFillHeart } from 'react-icons/ai';
 

@@ -1,15 +1,15 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import ChoosePlayerName from './ChoosePlayerName';
+import { useGlobalContext } from './context';
 
-const SelectPlayers = ({setPlayers, players, setShowGame}) => {
-    const [numPlayers, setNumPlayers] = useState(2);
+const SelectPlayers = () => {
+    const {setInitialPlayers} = useGlobalContext();
     const [showForm, setShowForm] = useState(false);
     const [showForms, setShowForms] = useState(true);
     
     const [playerID, setPlayerID] = useState(1);
 
     const handleNumPlayers = (numPlayers) => {
-        setNumPlayers(numPlayers);
         setShowForm(true);
         let totalPlayers = [];
         for (let i = 1; i <= numPlayers; i++) {
@@ -22,7 +22,7 @@ const SelectPlayers = ({setPlayers, players, setShowGame}) => {
                 isTurn: true,
 		    });
         }
-        setPlayers(totalPlayers);
+        setInitialPlayers(totalPlayers);
     }
 
     return <div className={`${showForms ? 'select-players-container' : 'hide'}`}>
@@ -35,7 +35,7 @@ const SelectPlayers = ({setPlayers, players, setShowGame}) => {
             <button className="btn general-btn" onClick={() => handleNumPlayers(6)}>6</button>
         </div>
         <div className={`${showForm ? '' : 'hide'}`}>
-           <ChoosePlayerName playerID={playerID} setPlayerID={setPlayerID} players={players} setPlayers={setPlayers} setShowForms={setShowForms} setShowGame={setShowGame}/>
+           <ChoosePlayerName playerID={playerID} setPlayerID={setPlayerID} setShowForms={setShowForms}/>
         </div>
     </div>
 }

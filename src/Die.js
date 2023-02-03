@@ -1,32 +1,22 @@
 import { AiFillHeart } from 'react-icons/ai';
 import { FaPaw } from 'react-icons/fa';
-import { useState, useEffect } from 'react';
+import { useGlobalContext } from './context';
 
-const Die = ({id, dieValue, dice, setDice, selected, numRolls}) => {
-
-    const isSelected = () => {
-        setDice(dice => {
-            return dice.map(die => {
-                if (die.id === id) {
-                    return {...die, selected: !selected};
-                }
-                return die;
-            })
-        });
-    }
+const Die = ({id, value, selected}) => {
+    const { selectDie, numRolls } = useGlobalContext();
  
-    const displayValue = (dieValue) => {
-        if (dieValue === 4) dieValue = <AiFillHeart/>
-		if (dieValue === 5) dieValue = <FaPaw/>
-        return dieValue;
+    const displayValue = (value) => {
+        if (value === 4) value = <AiFillHeart/>
+		if (value === 5) value = <FaPaw/>
+        return value;
     }
 
-    return <button 
-        className={`dice ${selected ? 'die-selected' : ''}`} 
-        disabled={numRolls === 3} 
-        onClick={isSelected}
+    return <button
+        disabled={numRolls === 3}
+        className={`dice ${selected ? 'die-selected' : ''}`}
+        onClick={() => selectDie(id)}
     >
-        <p className='dice-number'>{displayValue(dieValue)}</p>
+        <p className='dice-number'>{displayValue(value)}</p>
     </button>;
 }
 

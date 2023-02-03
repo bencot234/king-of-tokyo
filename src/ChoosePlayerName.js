@@ -1,12 +1,13 @@
 import {useState} from 'react';
+import { useGlobalContext } from './context';
 
-const ChoosePlayerName = ({playerID, setPlayerID, players, setPlayers, setShowForms, setShowGame}) => {
+const ChoosePlayerName = ({playerID, setPlayerID, setShowForms}) => {
+	const {setInitialPlayers, players, setShowGame} = useGlobalContext();
 	const [name, setName] = useState('');
-	const [show, setShow] = useState(true)
 
 	const handleSubmit = (e) => {
         e.preventDefault();
-        setPlayers(players.map(player => {
+        setInitialPlayers(players.map(player => {
             if (player.id === playerID) {
                 return {...player, name: name}
             }
@@ -17,13 +18,12 @@ const ChoosePlayerName = ({playerID, setPlayerID, players, setPlayers, setShowFo
         } else if (playerID === players.length) {
 			setPlayerID(1);
 			setShowForms(false);
-			setShowGame(true);
+			setShowGame()
 		}
 		setName('');
-
     }
 	return (
-		<div className={`${show ? 'choose-player-name-container' : 'hide'}`}>
+		<div className='choose-player-name-container'>
 			<h1>Choose name for Player {playerID}</h1>
 			<form onSubmit={handleSubmit}>
 				<input 
