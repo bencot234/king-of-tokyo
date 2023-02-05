@@ -326,6 +326,12 @@ input {
 	left: -100px;
 }
 
+.alienoid-image {
+	left: -450px;
+	top: -55px;
+	width: 650px;
+}
+
 .king-thumb {
 	left: -55px;
 }
@@ -418,14 +424,9 @@ input {
 		top: -50px;
 	}
 	.alienoid-image {
-		left: -365px;
-		top: -30px;
-		width: 650px;
+		left: -485px;
+		top: -50px;
+		width: 780px;
 	}
 }
 
-.alienoid-image {
-	left: -450px;
-	top: -55px;
-	width: 650px;
-}
