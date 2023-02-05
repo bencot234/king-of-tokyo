@@ -47,14 +47,16 @@ function App() {
 					<button onClick={rollDice} className='btn general-btn' disabled={numRolls === 0}>Roll Dice</button>
 					<button className='btn submit-btn' disabled={numRolls === 3} onClick={handleSubmit}>Submit</button>
 				</div>
-				<div className='players-container'>
-					{players.map((player, i) => {
-						player.isTurn = i === currentPlayerIndex;
-						return <Player key={player.id} {...player}/>
-					})}
-				</div>
-				<div className="board">
-					<img src={board} alt="king of tokyo board" />
+				<div className="relative board-players-container">
+					<div className='players-container'>
+						{players.map((player, i) => {
+							player.isTurn = i === currentPlayerIndex;
+							return <Player key={player.id} {...player}/>
+						})}
+					</div>
+					<div className="board">
+						<img src={board} alt="king of tokyo board" />
+					</div>
 				</div>
 			</div>}
 		</>
