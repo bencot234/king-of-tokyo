@@ -55,7 +55,7 @@ function App() {
 						})}
 					</div>
 					<div className="board">
-						<img src={board} alt="king of tokyo board" />
+						<img className="board-image" src={board} alt="king of tokyo board" />
 					</div>
 				</div>
 			</div>}
