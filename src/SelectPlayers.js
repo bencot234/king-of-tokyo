@@ -17,7 +17,7 @@ const SelectPlayers = () => {
                 id: i,
                 name: 'player '+i,
                 points: 0,
-                health: 5,
+                health: 10,
                 inTokyo: false,
                 isTurn: true,
 		    });

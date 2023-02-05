@@ -10,7 +10,7 @@ const initialState = {
 		{id: 3, value: 1, selected: false},
 		{id: 4, value: 1, selected: false},
 		{id: 5, value: 1, selected: false},
-		{id: 6, value: 1, selected: false},
+		// {id: 6, value: 1, selected: false},
 	],
 	numRolls: 3,
 	players: [],
@@ -68,7 +68,7 @@ const AppProvider = ({ children }) => {
 			dispatch({type: 'SHOW_MODAL', payload: {message: `${name} is the winner!`, index: 0, winner: true}});
 		}
 		state.players.map((player, i) => {
-			if (player.points >= 10) {
+			if (player.points >= 20) {
 				dispatch({type: 'SHOW_MODAL', payload: {message: `${player.name} is the winner!`, index: i}});
 			}
 		});
