@@ -1,3 +1,19 @@
+.logo {
+	text-align: center;
+	margin-top: 10rem;
+}
+
+.logo p {
+	text-transform: uppercase;
+	letter-spacing: 3px;
+}
+
+.rules-link {
+	margin-top: 3rem;
+	letter-spacing: 2px;
+	font-size: small;
+}
+
 .dice {
 	background-color: rgb(174, 251, 58);
 	width: 4rem;
@@ -55,16 +71,12 @@
 	grid-template-columns: 1fr auto;
 	row-gap: 1rem;
 	margin: 0 auto;
-	/* margin-left: -50px;
-	column-gap: 13rem; */
-	/* z-index: 1; */
 }
 
 .board {
-	/* display: none; */
 	left: 50%;
 	position: absolute;
-	top: 10%;
+	top: 32%;
 	margin-left: -100px;
 	width: 200px;
 	z-index: -1;
@@ -160,7 +172,6 @@ input {
 	background-color: white;
 	padding: 5px;
 	padding-top: 0px;
-	/* width: 40%; */
 	border-radius: 5px;
 }
 
@@ -239,9 +250,9 @@ input {
 	background-color: #000;
 }
 
-.relative {
+/* .relative {
 	position: relative;
-}
+} */
 
 .image {
 	width: 320px;
@@ -338,15 +349,17 @@ input {
 	}
 
 	.btn-container {
-		width: 20rem;
+		width: 100%;
+		margin: 0 auto;
+		justify-content: center;
 		display: flex;
 	}
 
 	.board {
-		/* display: block; */
 		width: 500px;
-		left: 50%;
+		left: 52%;
 		margin-left: -275px;
+		top: 20%;
 	}
 
 	.image {
