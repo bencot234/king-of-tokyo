@@ -1,6 +1,5 @@
 import { FaStar } from 'react-icons/fa';
 import { AiFillHeart } from 'react-icons/ai';
-import 'animate.css';
 
 const Player = ({name, points, health, inTokyo, isTurn, monster}) => {
 	return (

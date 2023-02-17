@@ -13,7 +13,7 @@ const Die = ({id, value, selected}) => {
 
     return <button
         disabled={numRolls === 3}
-        className={`dice ${selected ? 'die-selected' : ''}`}
+        className={`dice  ${selected ? 'die-selected' : ''}`}
         onClick={() => selectDie(id)}
     >
         <p className='dice-number'>{displayValue(value)}</p>
