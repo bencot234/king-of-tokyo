@@ -31,8 +31,6 @@ const SelectPlayers = () => {
             <button className="btn general-btn" onClick={() => handleNumPlayers(2)}>2</button>
             <button className="btn general-btn" onClick={() => handleNumPlayers(3)}>3</button>
             <button className="btn general-btn" onClick={() => handleNumPlayers(4)}>4</button>
-            <button className="btn general-btn" onClick={() => handleNumPlayers(5)}>5</button>
-            <button className="btn general-btn" onClick={() => handleNumPlayers(6)}>6</button>
         </div>
         <div className={`${showForm ? '' : 'hide'}`}>
            <ChoosePlayerName playerID={playerID} setPlayerID={setPlayerID} setShowForms={setShowForms}/>
