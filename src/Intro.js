@@ -9,7 +9,7 @@ const Intro = () => {
     useEffect(() => {
         setTimeout(() => {
             navigate('/game')
-        }, 5000)
+        }, 7000)
     }, [])
 
   return (

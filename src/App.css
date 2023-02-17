@@ -83,7 +83,7 @@
 .board {
 	left: 50%;
 	position: absolute;
-	top: 32%;
+	top: 20rem;
 	margin-left: -100px;
 	width: 200px;
 	z-index: -1;
@@ -359,7 +359,7 @@ input {
 		width: 500px;
 		left: 52%;
 		margin-left: -275px;
-		top: 20%;
+		top: 14rem;
 	}
 
 	.image {
