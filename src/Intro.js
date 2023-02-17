@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
 import { useNavigate } from 'react-router-dom'
-import logo from './images/logo.jpeg'
+import logo from './images/logo.jpg'
 import 'animate.css';
 
 const Intro = () => {

@@ -60,6 +60,13 @@
 	opacity: 70%;
 }
 
+.player-container h2 {
+	font-size: small;
+	background-color: white;
+	padding: 2px;
+	border-radius: 5px;
+}
+
 .board-players-container {
 	margin: 0 auto;
 	width: 20rem;
@@ -152,13 +159,6 @@ input {
 	padding-left: 0.5rem;
 }
 
-.player-name {
-	font-size: small;
-	background-color: white;
-	padding: 2px;
-	border-radius: 5px;
-}
-
 .player-content {
 	line-height: 0px;
 	margin: 0;
@@ -225,10 +225,6 @@ input {
 	font-weight: bold;
 }
 
-.player-in-tokyo {
-	color: red;
-}
-
 /*  IMAGES */
 .thumb-container {
 	width: 50px;
@@ -250,9 +246,13 @@ input {
 	background-color: #000;
 }
 
-/* .relative {
-	position: relative;
-} */
+.player-in-tokyo {
+	border: solid 2px red;
+}
+
+.player-in-tokyo h2 {
+	color: red;
+}
 
 .image {
 	width: 320px;
@@ -384,7 +384,7 @@ input {
 		font-size: larger;
 		padding-left: 5.5rem;
 	}
-	.player-name {
+	.player-container h2 {
 		font-size: x-large;
 	}
 	.icon {
