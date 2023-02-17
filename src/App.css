@@ -117,12 +117,11 @@
 .select-players-container, .winner-container, .yield-question-container {
 	position: absolute;
 	z-index: 1;
-	top: 20%;
+	top: 20rem;
 	left: 50%;
 	transform: translate(-50%, -50%);
 	background: white;
-	border-radius: 10px;
-	padding: 1rem 2rem;
+	border-radius: 1rem;
 }
 
 .hide {
