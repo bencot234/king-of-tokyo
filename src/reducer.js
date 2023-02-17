@@ -152,10 +152,10 @@ const reducer = (state, action) => {
 	if (action.type === 'UPDATE_PLAYERS__CURRENT_PLAYER_IN_TOKYO') {
 		const updatedPlayers = state.players.map((player, i) => {
 			if (i === state.currentPlayerIndex) {
-				return player;
+				return {...player, points: player.points + state.diceResults.points};
 			}
 			return {
-				...player, 
+				...player,
 				health: player.health - state.diceResults.damageDealt
 			};
 		})
