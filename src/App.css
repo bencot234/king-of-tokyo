@@ -26,6 +26,7 @@
 
 .dice-container {
 	display: flex;
+	justify-content: center;
 	flex-wrap: wrap;
 	width: 16rem;
 	margin: 0 auto;
@@ -102,8 +103,6 @@
 	background-color: rgb(153, 222, 51);
 }
 
-
-
 .btn-container {
 	margin: 0 auto;
 	width: 8rem;
@@ -112,9 +111,6 @@
 .app-container {
 	width: 100%;
 }
-
-
-
 
 .select-players-container, .winner-container, .yield-question-container {
 	position: absolute;
@@ -161,7 +157,6 @@ input {
 }
 
 .points, .health {
-	/* line-height: px; */
 	margin-top: 5px;
 	margin-bottom: 0px;
 	font-size: small;
@@ -171,19 +166,6 @@ input {
 	width: 40%;
 	border-radius: 5px;
 }
-/* .points-number {
-	background-color: #ffcc00;
-	padding-left: 5px;
-	padding-right: 5px;
-	border-radius: 5px;
-}
-.health-number {
-	background-color: red;
-	padding-left: 5px;
-	padding-right: 5px;
-	border-radius: 5px;
-} */
-
 
 .player-content p span{
 	line-height: 0.5rem;
@@ -211,9 +193,8 @@ input {
 	color: black;
 	padding: 1rem 2rem;
 	border-radius: 1rem;
-	width: 30rem;
+	width: 85vw;
 }
-
 
 .board-image {
 	max-width: 100%;
@@ -396,7 +377,6 @@ input {
 	}
 	.points,
 	.health {
-		/* line-height: px; */
 		margin-top: 15px;
 		margin-bottom: 0px;
 		font-size: larger;

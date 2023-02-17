@@ -37,7 +37,7 @@ function App() {
 	}
 
 	return (
-		<>
+		<main>
 			<SelectPlayers/>
 			{showGame && <div>
 				<Dice/>
@@ -59,7 +59,7 @@ function App() {
 					</div>
 				</div>
 			</div>}
-		</>
+		</main>
 	);
 }
 
