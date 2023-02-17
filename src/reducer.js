@@ -134,7 +134,7 @@ const reducer = (state, action) => {
 	if (action.type === 'UPDATE_PLAYERS') {
 		// if it's now the turn of the player in tokyo, add 2 points
 		let nextPlayerIndex = state.currentPlayerIndex + 1;
-		if (state.currentPlayerIndex === state.players.length) {
+		if (state.currentPlayerIndex === state.players.length -1) {
 			nextPlayerIndex = 0;
 		}
 		const newPlayers = state.players.map((player, i) => {
