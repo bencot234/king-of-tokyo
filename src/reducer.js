@@ -1,6 +1,81 @@
 
 const reducer = (state, action) => {
 
+	if (action.type === 'CHECK_ELIMINATED') {
+		let eliminatedPlayer = state.players.find(player => player.health <= 0);
+		if (eliminatedPlayer) {
+			const newPlayers = state.players.map((player, i) => {
+				if (i === state.currentPlayerIndex) {
+					return {...player, inTokyo: true};
+				}
+				return player;
+			}).filter(player => player.health > 0);
+		
+			const indexOfEliminated = state.players.indexOf(eliminatedPlayer);
+			return {
+				...state, 
+				players: newPlayers, 
+				indexOfEliminated: indexOfEliminated,
+				showModal: true,
+				modalMessage: `${eliminatedPlayer.name} has been eliminated!`,
+			}
+		}
+		return state;
+	}
+
+	if (action.type === 'CLOSE_MODAL') {
+		return {...state, showModal: false, gameOver: false};
+	}
+
+	if (action.type === 'DESELECT_DICE') {
+		const deselectedDice = state.dice.map(die => {
+			return {...die, selected: false};
+		})
+		return {
+			...state,
+			dice: deselectedDice,
+		}
+	}
+
+	if (action.type === 'HANDLE_YIELD') {
+		let prevPlayerIndex = state.currentPlayerIndex -1;
+		if (state.currentPlayerIndex === 0) {
+			prevPlayerIndex = state.players.length -1;
+		}
+		return {...state, showYieldModal: false, players: state.players.map((player, i) => {
+			if (player.inTokyo) {
+				if (player.id -1 === state.currentPlayerIndex) {
+					return {...player, inTokyo: false, points: player.points -2}
+				}
+				return {...player, inTokyo: false};
+			}
+			if (i === prevPlayerIndex) {
+				return {...player, points: player.points +1, inTokyo: true}
+			}
+			return player;
+		})};
+	}
+
+	if (action.type === 'HIDE_YIELD_MODAL') {
+		return {...state, showYieldModal: false};
+	}
+
+	if (action.type === 'PLAY_AGAIN') {
+		return {...state, players: state.playersReloaded, tokyoOccupied: false}
+	}
+
+	if (action.type === 'REDUCE_ROLLS_LEFT') {
+		const rollsLeft = state.numRolls - 1;
+		return {
+			...state,
+			numRolls: rollsLeft,
+		}
+	}
+
+	if (action.type === 'RESET_NUM_ROLLS') {
+		return {...state, numRolls: 3}
+	}
+
 	if (action.type === 'ROLL_DICE') {
 		const newDice = state.dice.map(die => {
 			let newValue = Math.floor(Math.random() * 5) + 1;
@@ -15,24 +90,6 @@ const reducer = (state, action) => {
 		}
 	}
 
-	if (action.type === 'PLAY_AGAIN') {
-		return {...state, players: state.players.map(player => {
-			return {
-				...player,
-				health: 10,
-				points: 0,
-			}
-		})}
-	}
-
-	if (action.type === 'SET_SHOW_GAME') {
-		return {...state, showGame: true}
-	}
-
-	if (action.type === 'SET_INITIAL_PLAYERS') {
-		return {...state, players: action.payload}
-	}
-
 	if (action.type === 'SELECT_DIE') {
 		const selected_die = state.dice.map(die => {
 			if (die.id === action.payload) {
@@ -44,26 +101,40 @@ const reducer = (state, action) => {
 		return {...state, dice: selected_die}
 	}
 
-	if (action.type === 'REDUCE_ROLLS_LEFT') {
-		const rollsLeft = state.numRolls - 1;
-		return {
-			...state,
-			numRolls: rollsLeft,
-		}
-	}
-
-	if (action.type === 'DESELECT_DICE') {
-		const deselectedDice = state.dice.map(die => {
-			return {...die, selected: false};
+	if (action.type === 'SET_DICE_RESULTS') {
+		let ones = 0;
+		let twos = 0;
+		let threes = 0;
+		let points = 0;
+		const {damageDealt, healthGained} = state.dice.reduce((total, dice) => {
+			if (dice.value === 1) ones += 1;
+			if (dice.value === 2) twos += 1;
+			if (dice.value === 3) threes += 1;
+			if (dice.value === 4) total.healthGained += 1;
+			if (dice.value === 5) total.damageDealt += 1;
+	
+			return total;
+		}, {
+			damageDealt: 0,
+			healthGained: 0,
 		})
+		if (ones >= 3) points += ones -2;
+		if (twos >= 3) points += twos -1;
+		if (threes >= 3) points += threes;
+
 		return {
 			...state,
-			dice: deselectedDice,
-		}
+			dice: state.dice.map(die => {return {...die, selected: false}}),
+			diceResults: {...state.diceResults, points: points, damageDealt: damageDealt, healthGained: healthGained},
+		};
 	}
 
-	if (action.type === 'SHOW_MODAL') {
-		return {...state, showModal: true, modalMessage: action.payload.message, currentPlayerIndex: action.payload.index}
+	if (action.type === 'SET_EXTRA_RULES') {
+		return {...state, extraRules: true};
+	}
+
+	if (action.type === 'SET_INITIAL_PLAYERS') {
+		return {...state, players: action.payload, playersReloaded: action.payload}
 	}
 
 	if (action.type === 'SET_NEXT_PLAYER') {
@@ -99,36 +170,25 @@ const reducer = (state, action) => {
 		return {...state, currentPlayerIndex: nextPlayerIndex, indexOfEliminated: null}
 	}
 
-	if (action.type === 'RESET_NUM_ROLLS') {
-		return {...state, numRolls: 3}
+	if (action.type === 'SET_PLAYER_IN_TOKYO_NAME') {
+		const playerInTokyo = state.players.find(player => player.inTokyo);
+		if (playerInTokyo) {
+			const name = playerInTokyo.name;
+			return {...state, playerInTokyoName: name}
+		}
+		return state;
 	}
 
-	if (action.type === 'SET_DICE_RESULTS') {
-		let ones = 0;
-		let twos = 0;
-		let threes = 0;
-		let points = 0;
-		const {damageDealt, healthGained} = state.dice.reduce((total, dice) => {
-			if (dice.value === 1) ones += 1;
-			if (dice.value === 2) twos += 1;
-			if (dice.value === 3) threes += 1;
-			if (dice.value === 4) total.healthGained += 1;
-			if (dice.value === 5) total.damageDealt += 1;
-	
-			return total;
-		}, {
-			damageDealt: 0,
-			healthGained: 0,
-		})
-		if (ones >= 3) points += ones -2;
-		if (twos >= 3) points += twos -1;
-		if (threes >= 3) points += threes;
+	if (action.type === 'SET_SHOW_GAME') {
+		return {...state, showGame: true}
+	}
 
-		return {
-			...state,
-			dice: state.dice.map(die => {return {...die, selected: false}}),
-			diceResults: {...state.diceResults, points: points, damageDealt: damageDealt, healthGained: healthGained},
-		};
+	if (action.type === 'SHOW_MODAL') {
+		return {...state, showModal: true, modalMessage: action.payload.message, currentPlayerIndex: action.payload.index, gameOver: action.payload.gameOver}
+	}
+
+	if (action.type === 'SHOW_YIELD_MODAL') {
+		return {...state, showYieldModal: true};
 	}
 
 	if (action.type === 'UPDATE_PLAYERS') {
@@ -163,15 +223,6 @@ const reducer = (state, action) => {
 			...state, 
 			players: updatedPlayers,
 		}
-	}
-
-	if (action.type === 'SET_PLAYER_IN_TOKYO_NAME') {
-		const playerInTokyo = state.players.find(player => player.inTokyo);
-		if (playerInTokyo) {
-			const name = playerInTokyo.name;
-			return {...state, playerInTokyoName: name}
-		}
-		return state;
 	}
 
 	if (action.type === 'UPDATE_PLAYERS__CURRENT_PLAYER_OUT_TOKYO') {
@@ -234,59 +285,6 @@ const reducer = (state, action) => {
 			tokyoOccupied: isTokyoOccupied,
 			showYieldModal: setShowYieldModal,
 		}
-	}
-
-	if (action.type === 'CHECK_ELIMINATED') {
-		let eliminatedPlayer = state.players.find(player => player.health <= 0);
-		if (eliminatedPlayer) {
-			const newPlayers = state.players.map((player, i) => {
-				if (i === state.currentPlayerIndex) {
-					return {...player, inTokyo: true};
-				}
-				return player;
-			}).filter(player => player.health > 0);
-		
-			const indexOfEliminated = state.players.indexOf(eliminatedPlayer);
-			return {
-				...state, 
-				players: newPlayers, 
-				indexOfEliminated: indexOfEliminated,
-				showModal: true,
-				modalMessage: `${eliminatedPlayer.name} has been eliminated!`,
-			}
-		}
-		return state;
-	}
-
-	if (action.type === 'CLOSE_MODAL') {
-		return {...state, showModal: false};
-	}
-
-	if (action.type === 'SHOW_YIELD_MODAL') {
-		return {...state, showYieldModal: true};
-	}
-
-	if (action.type === 'HIDE_YIELD_MODAL') {
-		return {...state, showYieldModal: false};
-	}
-
-	if (action.type === 'HANDLE_YIELD') {
-		let prevPlayerIndex = state.currentPlayerIndex -1;
-		if (state.currentPlayerIndex === 0) {
-			prevPlayerIndex = state.players.length -1;
-		}
-		return {...state, showYieldModal: false, players: state.players.map((player, i) => {
-			if (player.inTokyo) {
-				if (player.id -1 === state.currentPlayerIndex) {
-					return {...player, inTokyo: false, points: player.points -2}
-				}
-				return {...player, inTokyo: false};
-			}
-			if (i === prevPlayerIndex) {
-				return {...player, points: player.points +1, inTokyo: true}
-			}
-			return player;
-		})};
 	}
 }
 

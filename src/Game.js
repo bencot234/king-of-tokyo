@@ -7,8 +7,6 @@ import board from './images/king-of-tokyo-board.jpeg';
 import Modal from './Modal';
 import YieldModal from './YieldModal';
 
-
-
 function Game() {
 	const { 
 		rollDice, 
@@ -24,8 +22,8 @@ function Game() {
 		showYieldModal,
 		setPlayerName,
 		showGame,
+		gameOver,
 	} = useGlobalContext();
-
 
 	const handleSubmit = () => {
 		setDiceResults();
