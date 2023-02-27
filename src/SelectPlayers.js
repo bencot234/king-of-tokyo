@@ -10,7 +10,7 @@ const SelectPlayers = () => {
     const [playerID, setPlayerID] = useState(1);
 
     const handleNumPlayers = (numPlayers) => {
-        if (numPlayers >= 5) setExtraRules();
+        if (numPlayers >= 5) setExtraRules(true);
         setShowForm(true);
         let totalPlayers = [];
         for (let i = 1; i <= numPlayers; i++) {

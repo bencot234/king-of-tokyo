@@ -34,8 +34,10 @@ const initialState = {
 	playerInTokyoName: '',
 	extraRules: false,
 	gameOver: false,
-	tokyoCityPlayer: {},
-	tokyoBayPlayer: {},
+	tokyoCityPlayer: null,
+	tokyoBayPlayer: null,
+	playersInTokyo: 0,
+	tokyoCityYielded: false,
 };
 
 const AppProvider = ({ children }) => {
@@ -61,8 +63,22 @@ const AppProvider = ({ children }) => {
 		dispatch({type: 'HANDLE_YIELD'});
 	}
 
+	const handleYieldTokyoCity = () => {
+		dispatch({type: 'HANDLE_YIELD_TOKYO_CITY'});
+	}
+
+	const handleYieldTokyoBay = () => {
+		dispatch({type: 'HANDLE_YIELD_TOKYO_BAY'});
+	}
+
 	const hideYieldModal = () => {
 		dispatch({type: 'HIDE_YIELD_MODAL'});
+	}
+	const hideYieldTokyoCityModal = () => {
+		dispatch({type: 'HIDE_YIELD_TOKYO_CITY_MODAL'});
+	}
+	const hideYieldTokyoBayModal = () => {
+		dispatch({type: 'HIDE_YIELD_TOKYO_BAY_MODAL'});
 	}
 
 	const playAgain = () => {
@@ -86,8 +102,8 @@ const AppProvider = ({ children }) => {
 		dispatch({type: 'SET_DICE_RESULTS'});
 	}
 
-	const setExtraRules = () => {
-		dispatch({type: 'SET_EXTRA_RULES'})
+	const setExtraRules = (extraRules) => {
+		dispatch({type: 'SET_EXTRA_RULES', payload: extraRules});
 	}
 
 	const setInitialPlayers = (initialPlayers) => {
@@ -102,8 +118,11 @@ const AppProvider = ({ children }) => {
 		dispatch({type: 'SET_PLAYER_IN_TOKYO_NAME'})
     }
 
-	const setShowGame = () => {
-		dispatch({type: 'SET_SHOW_GAME'});
+	const showGame = () => {
+		dispatch({type: 'SHOW_GAME'});
+	}
+	const setTokyoCityYielded = () => {
+		dispatch({type: 'SET_TOKYO_CITY_YIELDED'});
 	}
    
 	const updatePlayers = () => {
@@ -151,9 +170,14 @@ const AppProvider = ({ children }) => {
 				handleYield,
 				setPlayerName,
 				setInitialPlayers,
-				setShowGame,
+				showGame,
 				playAgain,
 				setExtraRules,
+				handleYieldTokyoCity,
+				handleYieldTokyoBay,
+				hideYieldTokyoCityModal,
+				hideYieldTokyoBayModal,
+				setTokyoCityYielded,
             }}
         >
             {children}

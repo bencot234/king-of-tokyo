@@ -6,6 +6,8 @@ import { useGlobalContext } from './context';
 import board from './images/king-of-tokyo-board.jpeg';
 import Modal from './Modal';
 import YieldModal from './YieldModal';
+import YieldTokyoCityModal from './YieldTokyoCityModal';
+import YieldTokyoBayModal from './YieldTokyoBayModal';
 
 function Game() {
 	const { 
@@ -24,10 +26,11 @@ function Game() {
 		showYieldTokyoBayModal,
 		setPlayerName,
 		showGame,
-		gameOver,
+		setTokyoCityYielded,
 	} = useGlobalContext();
 
 	const handleSubmit = () => {
+		setTokyoCityYielded();
 		setDiceResults();
 		updatePlayers();
 		checkEliminated();
@@ -41,10 +44,10 @@ function Game() {
 			<SelectPlayers/>
 			{showGame && <div>
 				<Dice/>
-				{showModal && <Modal/>}
 				{showYieldModal && <YieldModal/>}
-				{showYieldTokyoCityModal && <YieldModal/>}
-				{showYieldTokyoBayModal && <YieldModal/>}
+				{showYieldTokyoBayModal && <YieldTokyoBayModal/>}
+				{showYieldTokyoCityModal && <YieldTokyoCityModal/>}
+				{showModal && <Modal/>}
 				<div className='btn-container'>
 					<button onClick={rollDice} className='btn general-btn' disabled={numRolls === 0}>Roll Dice</button>
 					<button className='btn submit-btn' disabled={numRolls === 3} onClick={handleSubmit}>Submit</button>

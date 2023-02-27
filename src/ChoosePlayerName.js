@@ -9,7 +9,7 @@ import alienoid from './images/Alienoid.jpeg';
 
 const ChoosePlayerName = ({playerID, setPlayerID, setShowForms}) => {
 	const nameInput = useRef(null);
-	const {setInitialPlayers, players, setShowGame} = useGlobalContext();
+	const {setInitialPlayers, players, showGame} = useGlobalContext();
 	const [name, setName] = useState('');
 	const [monsters, setMonsters] = useState([
 		{
@@ -54,7 +54,6 @@ const ChoosePlayerName = ({playerID, setPlayerID, setShowForms}) => {
 		if (nameInput.current) {
 			nameInput.current.focus();
 		}
-		console.log(nameInput.current)
 	}, [])
 
 	const handleSubmit = (e) => {
@@ -75,7 +74,7 @@ const ChoosePlayerName = ({playerID, setPlayerID, setShowForms}) => {
         } else if (playerID === players.length) {
 			setPlayerID(1);
 			setShowForms(false);
-			setShowGame()
+			showGame()
 		}
 		setName('');
 		const newMonsters = monsters.filter(monster => !monster.selected);

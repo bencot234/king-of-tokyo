@@ -26,8 +26,19 @@ const reducer = (state, action) => {
 					return player;
 				}).filter(player => player.health > 0);
 			}
-			
-		
+			let extraRules = true;
+			let bayOccupied = state.tokyoBayOccupied;
+			console.log('new players length: ',newPlayers.length);
+			if (newPlayers.length < 5) {
+				bayOccupied = false;
+				extraRules = false;
+				newPlayers = newPlayers.map(player => {
+					if (player.inTokyoBay) {
+						return {...player, inTokyoBay: false};
+					}
+					return player;
+				})
+			}
 			const indexOfEliminated = state.players.indexOf(eliminatedPlayer);
 			return {
 				...state, 
@@ -35,6 +46,8 @@ const reducer = (state, action) => {
 				indexOfEliminated: indexOfEliminated,
 				showModal: true,
 				modalMessage: `${eliminatedPlayer.name} has been eliminated!`,
+				extraRules: extraRules,
+				tokyoBayOccupied: bayOccupied,
 			}
 		}
 		return state;
@@ -54,35 +67,141 @@ const reducer = (state, action) => {
 		}
 	}
 
-	if (action.type === 'HANDLE_YIELD') {
+	if (action.type === 'HANDLE_YIELD_TOKYO_CITY') { // --------------------------------------------------------------------
+		// GET THE PLAYER INDEX THAT JUST ATTACKED
 		let prevPlayerIndex = state.currentPlayerIndex -1;
 		if (state.currentPlayerIndex === 0) {
 			prevPlayerIndex = state.players.length -1;
 		}
-		return {...state, showYieldModal: false, showYieldTokyoCityModal: false, showYieldTokyoBayModal: false, players: state.players.map((player, i) => {
-			if (player.inTokyo || player.inTokyoCity || player.inTokyoBay) {
+		let newPlayers = state.players;
+		let tokyoCityOccupied = true;
+		let tokyoBayOccupied = false;
+		// if no one in tokyo bay
+		if (!state.tokyoBayOccupied) {
+			newPlayers = state.players.map((player, i) => {
+				if (player.inTokyoCity) {
+					if (player.id -1 === state.currentPlayerIndex) {
+						return {
+							...player, 
+							inTokyoCity: false,
+							points: player.points -2
+						}
+					}
+					return {...player, inTokyoCity: false}
+				}
+				if (i === prevPlayerIndex) {
+					return {...player, points: player.points + 1, inTokyoCity: true};
+				}
+			})
+		}
+		// if someone in tokyo bay
+		if (state.tokyoBayOccupied) {
+			tokyoBayOccupied = true;
+			newPlayers = state.players.map((player, i) => {
+				if (player.inTokyoCity) {
+					if (player.id -1 === state.currentPlayerIndex) {
+						return {
+							...player, 
+							inTokyoCity: false,
+							points: player.points -2
+						}
+					}
+					return {...player, inTokyoCity: false}
+				}
+				if (player.inTokyoBay) {
+					return {
+						...player,
+						inTokyoBay: false,
+						inTokyoCity: true,
+					}
+				}
+				if (i === prevPlayerIndex) {
+					return {
+						...player, 
+						points: player.points + 1, 
+						inTokyoBay: true
+					};
+				}
+				return player;
+			})
+		}
+		return {
+			...state,
+			players: newPlayers,
+			tokyoCityYielded: true,
+			tokyoCityOccupied: tokyoCityOccupied,
+			tokyoBayOccupied: tokyoBayOccupied,
+		}
+	}
+	if (action.type === 'HANDLE_YIELD_TOKYO_BAY') {
+		// GET THE PLAYER THAT JUST ATTACKED
+		let prevPlayerIndex = state.currentPlayerIndex -1;
+		if (state.currentPlayerIndex === 0) {
+			prevPlayerIndex = state.players.length -1;
+		}
+
+		// if someone attacks tokyo
+		// and tokyo city yields
+		// and tokyo bay yields
+		// tokyo bay is unoccupied
+		let tokyoBayOccupied = true;
+		if (state.tokyoCityYielded) {
+			tokyoBayOccupied = false;
+		}
+		const newPlayers = state.players.map((player, i) => {
+			if (player.inTokyoBay) {
 				if (player.id -1 === state.currentPlayerIndex) {
 					return {
 						...player, 
-						inTokyo: false, 
-						inTokyoCity: false, 
-						inTokyoBay: false, 
+						inTokyoBay: false,
 						points: player.points -2
 					}
 				}
-				return {...player, inTokyo: false, inTokyoCity: false, inTokyoBay: false};
+				return {...player, inTokyoBay: false}
 			}
 			if (i === prevPlayerIndex) {
-				// IF TOKYO PLAYER IS IN TOKYO CITY, PUT PREV PLAYER IN TOKYO CITY
-				// IF TOKYO PLAYER IS IN TOKYO BAY, PUT PREV PLAYER IN TOKYO BAY
+				return {...player, points: player.points + 1, inTokyoBay: true};
+			}
+			return player;
+		})
+
+		return {...state, players: newPlayers, tokyoBayOccupied: tokyoBayOccupied}
+	}
+
+	if (action.type === 'HANDLE_YIELD') {
+		// GET THE PLAYER THAT JUST ATTACKED
+		let prevPlayerIndex = state.currentPlayerIndex -1;
+		if (state.currentPlayerIndex === 0) {
+			prevPlayerIndex = state.players.length -1;
+		}
+
+		const newPlayers = state.players.map((player, i) => {
+			if (player.inTokyo) {
+				if (player.id -1 === state.currentPlayerIndex) {
+					return {
+						...player, 
+						inTokyo: false,
+						points: player.points -2
+					}
+				}
+				return {...player, inTokyo: false};
+			}
+			if (i === prevPlayerIndex) {
 				return {...player, points: player.points +1, inTokyo: true}
 			}
 			return player;
-		})};
+		})
+		return {...state, showYieldModal: false, players: newPlayers};
 	}
 
 	if (action.type === 'HIDE_YIELD_MODAL') {
-		return {...state, showYieldModal: false, showYieldTokyoCityModal: false, showYieldTokyoBayModal: false};
+		return {...state, showYieldModal: false};
+	}
+	if (action.type === 'HIDE_YIELD_TOKYO_CITY_MODAL') {
+		return {...state, showYieldTokyoCityModal: false};
+	}
+	if (action.type === 'HIDE_YIELD_TOKYO_BAY_MODAL') {
+		return {...state, showYieldTokyoBayModal: false};
 	}
 
 	if (action.type === 'PLAY_AGAIN') {
@@ -161,7 +280,7 @@ const reducer = (state, action) => {
 	}
 
 	if (action.type === 'SET_EXTRA_RULES') {
-		return {...state, extraRules: true};
+		return {...state, extraRules: action.payload};
 	}
 
 	if (action.type === 'SET_INITIAL_PLAYERS') {
@@ -211,16 +330,20 @@ const reducer = (state, action) => {
 		}
 		if (playerInTokyoCity) {
 			const name = playerInTokyoCity.name;
-			return {...state, playerInTokyoName: name}
+			return {...state, tokyoCityPlayer: playerInTokyoCity}
 		}
 		if (playerInTokyoBay) {
 			const name = playerInTokyoBay.name;
-			return {...state, playerInTokyoName: name}
+			return {...state, tokyoBayPlayer: playerInTokyoBay}
 		}
 		return state;
 	}
 
-	if (action.type === 'SET_SHOW_GAME') {
+	if (action.type === 'SET_TOKYO_CITY_YIELDED') {
+		return {...state, tokyoCityYielded: false}
+	}
+
+	if (action.type === 'SHOW_GAME') {
 		return {...state, showGame: true}
 	}
 
@@ -239,7 +362,6 @@ const reducer = (state, action) => {
 			tokyoBayOccupied,
 			diceResults,
 			players,
-			tokyoCityPlayer,
 			tokyoBayPlayer,
 		} = state;
 		// scenarios:
@@ -277,7 +399,6 @@ const reducer = (state, action) => {
 				...state,
 				players: newPlayers,
 				tokyoCityOccupied: intoTokyoCity,
-				tokyoCityPlayer: currentPlayer,
 			}
 		}
 		// 2. CURRENT PLAYER IN TOKYO CITY, NO-ONE IN TOKYO BAY
@@ -321,7 +442,7 @@ const reducer = (state, action) => {
 				if (player === currentPlayer) {
 					return {...player, points: player.points + diceResults.points};
 				}
-				if (player === tokyoCityPlayer) {
+				if (player.inTokyoCity) {
 					return player;
 				}
 				return {
@@ -334,11 +455,10 @@ const reducer = (state, action) => {
 				players: updatedPlayers,
 			}
 		}
-		// 5. CURRENT PLAYER NOT IN TOKYO, ONE PLAYER IN TOKYO CITY, NO-ONE IN TOKYO BAY
-		if (!currentPlayer.inTokyo && tokyoCityOccupied && !tokyoBayOccupied) {
+		// 5. CURRENT PLAYER NOT IN TOKYO, ONE PLAYER IN TOKYO CITY, NO-ONE IN TOKYO BAY ----------------------------------------------------
+		if (!currentPlayer.inTokyoBay && !currentPlayer.inTokyoCity && tokyoCityOccupied && !tokyoBayOccupied) {
 			let intoTokyoBay = false;
-			let yieldTokyoCity = false;
-			let yieldTokyoBay = false;
+			const tokyoCityPlayer = players.find(player => player.inTokyoCity);
 			
 			// UPDATE HEALTH
 			let newHealth = currentPlayer.health + diceResults.healthGained;
@@ -360,11 +480,10 @@ const reducer = (state, action) => {
 			}
 
 			// YIELD QUESTION
-			let setShowYieldModal = false;
+			let showYieldTokyoCityModal = false;
 			if (diceResults.damageDealt > 0) {
-				const tokyoCityPlayer = players.find(player => player.inTokyoCity);
 				if (tokyoCityPlayer.health - diceResults.damageDealt > 0) {
-					yieldTokyoCity = true;
+					showYieldTokyoCityModal = true;	
 				}
 			}
 			
@@ -384,9 +503,9 @@ const reducer = (state, action) => {
 				...state, 
 				players: updatedPlayers,
 				tokyoBayOccupied: intoTokyoBay,
-				showYieldModal: setShowYieldModal,
-				showYieldTokyoCityModal: yieldTokyoCity,
-				showYieldTokyoBayModal: yieldTokyoBay,
+				tokyoCityPlayer: tokyoCityPlayer,
+				tokyoBayPlayer: updatedCurrentPlayer,
+				showYieldTokyoCityModal: showYieldTokyoCityModal,
 			}
 		}
 		// 6. CURRENT PLAYER NOT IN TOKYO, ONE PLAYER IN TOKYO CITY, ONE PLAYER IN TOKYO BAY
@@ -400,6 +519,8 @@ const reducer = (state, action) => {
 				players, 
 				diceResults,
 			} = state;
+			let showYieldTokyoCityModal = false;
+			let showYieldTokyoBayModal = false;
 			
 			// UPDATE HEALTH
 			let newHealth = currentPlayer.health + diceResults.healthGained;
@@ -413,17 +534,18 @@ const reducer = (state, action) => {
 			};
 
 			// YIELD QUESTION
-			let setShowYieldModal = false;
 			if (diceResults.damageDealt > 0) {
 				const tokyoCityPlayer = players.find(player => player.inTokyoCity);
-				console.log('tokyoCityPlayer: ',tokyoCityPlayer);
 				const tokyoBayPlayer = players.find(player => player.inTokyoBay);
-				// console.log('health: ',tokyoCityPlayer.health)
-				if (tokyoCityPlayer) {
-					if (tokyoCityPlayer.health - diceResults.damageDealt > 0) {
-						setShowYieldModal = true;
-					}
-
+				if (tokyoCityPlayer.health - diceResults.damageDealt > 0) {
+					showYieldTokyoCityModal = true;
+				}
+				console.log('tokyoBayPlayer: ',tokyoBayPlayer)
+				console.log('tokyoCityPlayer: ',tokyoCityPlayer)
+				console.log('tokyoBayOccupied: ',tokyoBayOccupied)
+				console.log('tokyoCityOccupied: ',tokyoCityOccupied)
+				if (tokyoBayPlayer.health - diceResults.damageDealt > 0) {
+					showYieldTokyoBayModal = true;
 				}
 			}
 			
@@ -442,7 +564,8 @@ const reducer = (state, action) => {
 			return {
 				...state, 
 				players: updatedPlayers,
-				showYieldModal: setShowYieldModal,
+				showYieldTokyoCityModal: showYieldTokyoCityModal,
+				showYieldTokyoBayModal: showYieldTokyoBayModal,
 			}
 		} 
 	}
