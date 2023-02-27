@@ -20,6 +20,8 @@ function Game() {
 		checkEliminated,
 		showModal,
 		showYieldModal,
+		showYieldTokyoCityModal,
+		showYieldTokyoBayModal,
 		setPlayerName,
 		showGame,
 		gameOver,
@@ -41,6 +43,8 @@ function Game() {
 				<Dice/>
 				{showModal && <Modal/>}
 				{showYieldModal && <YieldModal/>}
+				{showYieldTokyoCityModal && <YieldModal/>}
+				{showYieldTokyoBayModal && <YieldModal/>}
 				<div className='btn-container'>
 					<button onClick={rollDice} className='btn general-btn' disabled={numRolls === 0}>Roll Dice</button>
 					<button className='btn submit-btn' disabled={numRolls === 3} onClick={handleSubmit}>Submit</button>

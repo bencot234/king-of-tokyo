@@ -20,6 +20,8 @@ const SelectPlayers = () => {
                 points: 0,
                 health: 3,
                 inTokyo: false,
+                inTokyoCity: false,
+                inTokyoBay: false,
                 isTurn: true,
 		    });
         }

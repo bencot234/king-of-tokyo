@@ -113,35 +113,14 @@ const ChoosePlayerName = ({playerID, setPlayerID, setShowForms}) => {
 			})}
 			<form onSubmit={handleSubmit}>
 				<div>
-					{/* <label htmlFor="name">Choose name: </label> */}
 					<input 
 						type="text"
 						ref={nameInput}
 						value={name}
-						// name="name"
 						onChange={(e) => setName(e.target.value)}
 						placeholder={`Player ${playerID}`}
 					/>
 				</div>
-			
-				{/* <button className="thumb-container">
-					<img className="thumb" src={kraken} alt="" />
-				</button> */}
-				{/* <button className="thumb-container">
-					<img className="thumb bunny-thumb" src={bunny} alt="" />
-				</button>
-				<button className="thumb-container">
-					<img className="thumb king-thumb" src={king} alt="" />
-				</button>
-				<button className="thumb-container">
-					<img className="thumb" src={gigazaur} alt="" />
-				</button>
-				<button className="thumb-container">
-					<img className="thumb meka-thumb" src={meka} alt="" />
-				</button>
-				<button className="thumb-container">
-					<img className="thumb alienoid-thumb" src={alienoid} alt="" />
-				</button> */}
 				<button type="submit" className="btn submit-btn">Enter</button>
 			</form>
 		</div>

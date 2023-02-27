@@ -1,7 +1,13 @@
 import { useGlobalContext } from "./context";
+import { useState, useEffect } from 'react';
 
 const YieldModal = () => {
-    const { hideYieldModal, handleYield, playerInTokyoName } = useGlobalContext();
+    const { 
+        hideYieldModal,
+        handleYield,
+        playerInTokyoName,
+    } = useGlobalContext();
+
     return <div className="winner-container">
         <p>{`${playerInTokyoName}, do you yield?`}</p>
         <button className="btn submit-btn" onClick={handleYield}>Yes</button>

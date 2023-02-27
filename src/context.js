@@ -23,13 +23,19 @@ const initialState = {
 	},
 	showModal: false,
 	showYieldModal: false,
+	showYieldTokyoCityModal: false,
+	showYieldTokyoBayModal: false,
 	modalMessage: '',
 	tokyoOccupied: false,
+	tokyoCityOccupied: false,
+	tokyoBayOccupied: false,
 	indexOfEliminated: null,
 	showGame: false,
 	playerInTokyoName: '',
 	extraRules: false,
 	gameOver: false,
+	tokyoCityPlayer: {},
+	tokyoBayPlayer: {},
 };
 
 const AppProvider = ({ children }) => {
@@ -102,13 +108,16 @@ const AppProvider = ({ children }) => {
    
 	const updatePlayers = () => {
 		const currentPlayer = state.players.find((player, i) => i === state.currentPlayerIndex);
-		if (currentPlayer.inTokyo) {
-			dispatch({type: 'UPDATE_PLAYERS__CURRENT_PLAYER_IN_TOKYO'})
+		if (state.extraRules) {
+			dispatch({type: 'UPDATE_PLAYERS__EXTRA_RULES', payload: currentPlayer})
 		} else {
-			dispatch({type: 'UPDATE_PLAYERS__CURRENT_PLAYER_OUT_TOKYO'})
+			if (currentPlayer.inTokyo) {
+				dispatch({type: 'UPDATE_PLAYERS__CURRENT_PLAYER_IN_TOKYO'})
+			} else {
+				dispatch({type: 'UPDATE_PLAYERS__CURRENT_PLAYER_OUT_TOKYO'})
+			}
+			dispatch({type: 'UPDATE_PLAYERS'});
 		}
-
-		dispatch({type: 'UPDATE_PLAYERS'});
 	}
 
 	// WIN CONDITIONS

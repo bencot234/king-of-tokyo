@@ -4,12 +4,29 @@ const reducer = (state, action) => {
 	if (action.type === 'CHECK_ELIMINATED') {
 		let eliminatedPlayer = state.players.find(player => player.health <= 0);
 		if (eliminatedPlayer) {
-			const newPlayers = state.players.map((player, i) => {
+			let newPlayers = state.players.map((player, i) => {
 				if (i === state.currentPlayerIndex) {
 					return {...player, inTokyo: true};
 				}
 				return player;
 			}).filter(player => player.health > 0);
+			if (eliminatedPlayer.inTokyoCity) {
+				newPlayers = state.players.map((player, i) => {
+					if (i === state.currentPlayerIndex) {
+						return {...player, inTokyoCity: true};
+					}
+					return player;
+				}).filter(player => player.health > 0);
+			}
+			if (eliminatedPlayer.inTokyoBay) {
+				newPlayers = state.players.map((player, i) => {
+					if (i === state.currentPlayerIndex) {
+						return {...player, inTokyoBay: true};
+					}
+					return player;
+				}).filter(player => player.health > 0);
+			}
+			
 		
 			const indexOfEliminated = state.players.indexOf(eliminatedPlayer);
 			return {
@@ -42,14 +59,22 @@ const reducer = (state, action) => {
 		if (state.currentPlayerIndex === 0) {
 			prevPlayerIndex = state.players.length -1;
 		}
-		return {...state, showYieldModal: false, players: state.players.map((player, i) => {
-			if (player.inTokyo) {
+		return {...state, showYieldModal: false, showYieldTokyoCityModal: false, showYieldTokyoBayModal: false, players: state.players.map((player, i) => {
+			if (player.inTokyo || player.inTokyoCity || player.inTokyoBay) {
 				if (player.id -1 === state.currentPlayerIndex) {
-					return {...player, inTokyo: false, points: player.points -2}
+					return {
+						...player, 
+						inTokyo: false, 
+						inTokyoCity: false, 
+						inTokyoBay: false, 
+						points: player.points -2
+					}
 				}
-				return {...player, inTokyo: false};
+				return {...player, inTokyo: false, inTokyoCity: false, inTokyoBay: false};
 			}
 			if (i === prevPlayerIndex) {
+				// IF TOKYO PLAYER IS IN TOKYO CITY, PUT PREV PLAYER IN TOKYO CITY
+				// IF TOKYO PLAYER IS IN TOKYO BAY, PUT PREV PLAYER IN TOKYO BAY
 				return {...player, points: player.points +1, inTokyo: true}
 			}
 			return player;
@@ -57,11 +82,17 @@ const reducer = (state, action) => {
 	}
 
 	if (action.type === 'HIDE_YIELD_MODAL') {
-		return {...state, showYieldModal: false};
+		return {...state, showYieldModal: false, showYieldTokyoCityModal: false, showYieldTokyoBayModal: false};
 	}
 
 	if (action.type === 'PLAY_AGAIN') {
-		return {...state, players: state.playersReloaded, tokyoOccupied: false}
+		return {
+			...state, 
+			players: state.playersReloaded, 
+			tokyoOccupied: false, 	
+			tokyoCityOccupied: false,
+			tokyoBayOccupied: false,
+		}
 	}
 
 	if (action.type === 'REDUCE_ROLLS_LEFT') {
@@ -172,8 +203,18 @@ const reducer = (state, action) => {
 
 	if (action.type === 'SET_PLAYER_IN_TOKYO_NAME') {
 		const playerInTokyo = state.players.find(player => player.inTokyo);
+		const playerInTokyoCity = state.players.find(player => player.inTokyoCity);
+		const playerInTokyoBay = state.players.find(player => player.inTokyoBay);
 		if (playerInTokyo) {
 			const name = playerInTokyo.name;
+			return {...state, playerInTokyoName: name}
+		}
+		if (playerInTokyoCity) {
+			const name = playerInTokyoCity.name;
+			return {...state, playerInTokyoName: name}
+		}
+		if (playerInTokyoBay) {
+			const name = playerInTokyoBay.name;
 			return {...state, playerInTokyoName: name}
 		}
 		return state;
@@ -191,6 +232,221 @@ const reducer = (state, action) => {
 		return {...state, showYieldModal: true};
 	}
 
+	if (action.type === 'UPDATE_PLAYERS__EXTRA_RULES') {
+		let currentPlayer = action.payload;
+		const {
+			tokyoCityOccupied,
+			tokyoBayOccupied,
+			diceResults,
+			players,
+			tokyoCityPlayer,
+			tokyoBayPlayer,
+		} = state;
+		// scenarios:
+		// 1. NO ONE IS IN TOKYO
+		// if you roll a paw, you go into tokyo city
+		if (!tokyoCityOccupied && !tokyoBayOccupied) {
+			let newPlayers = players;
+			let intoTokyoCity = false;
+			if (diceResults.damageDealt > 0) {
+				newPlayers = players.map((player) => {
+					if (player === currentPlayer) {
+						currentPlayer = {
+							...player,
+							points: player.points + diceResults.points + 1,
+							inTokyoCity: true,
+						};
+						return currentPlayer
+					}
+					return player;
+				})
+				intoTokyoCity = true;
+			} else {
+				newPlayers = players.map((player) => {
+					if (player === currentPlayer) {
+						currentPlayer = {
+							...player,
+							points: player.points + diceResults.points,
+						};
+						return currentPlayer;
+					}
+					return player;
+				})
+			}
+			return {
+				...state,
+				players: newPlayers,
+				tokyoCityOccupied: intoTokyoCity,
+				tokyoCityPlayer: currentPlayer,
+			}
+		}
+		// 2. CURRENT PLAYER IN TOKYO CITY, NO-ONE IN TOKYO BAY
+		if (currentPlayer.inTokyoCity && !tokyoBayOccupied) {
+			const updatedPlayers = players.map((player) => {
+				if (player === currentPlayer) {
+					return {...player, points: player.points + diceResults.points};
+				}
+				return {
+					...player,
+					health: player.health - diceResults.damageDealt
+				};
+			})
+			return {
+				...state,
+				players: updatedPlayers,
+			}
+		}
+		// 3. CURRENT PLAYER IN TOKYO CITY, ONE PLAYER IN TOKYO BAY
+		if (currentPlayer.inTokyoCity && tokyoBayOccupied) {
+			const updatedPlayers = players.map((player) => {
+				if (player === currentPlayer) {
+					return {...player, points: player.points + diceResults.points};
+				}
+				if (player === tokyoBayPlayer) {
+					return player;
+				}
+				return {
+					...player,
+					health: player.health - diceResults.damageDealt
+				};
+			})
+			return {
+				...state,
+				players: updatedPlayers,
+			}
+		}
+		// 4. CURRENT PLAYER IN TOKYO BAY
+		if (currentPlayer.inTokyoBay) {
+			const updatedPlayers = players.map((player, i) => {
+				if (player === currentPlayer) {
+					return {...player, points: player.points + diceResults.points};
+				}
+				if (player === tokyoCityPlayer) {
+					return player;
+				}
+				return {
+					...player,
+					health: player.health - diceResults.damageDealt
+				};
+			})
+			return {
+				...state,
+				players: updatedPlayers,
+			}
+		}
+		// 5. CURRENT PLAYER NOT IN TOKYO, ONE PLAYER IN TOKYO CITY, NO-ONE IN TOKYO BAY
+		if (!currentPlayer.inTokyo && tokyoCityOccupied && !tokyoBayOccupied) {
+			let intoTokyoBay = false;
+			let yieldTokyoCity = false;
+			let yieldTokyoBay = false;
+			
+			// UPDATE HEALTH
+			let newHealth = currentPlayer.health + diceResults.healthGained;
+			if (newHealth > 10) newHealth = 10;
+
+			let updatedCurrentPlayer = {
+				...currentPlayer, 
+				points: currentPlayer.points + diceResults.points,
+				health: newHealth,
+			};
+			// UPDATE PLAYER
+			if (diceResults.damageDealt > 0) {
+				updatedCurrentPlayer = {
+					...updatedCurrentPlayer, 
+					points: updatedCurrentPlayer.points + 1,
+					inTokyoBay: true, // WHAT IF TOKYO CITY PLAYER YIELDED?
+				};
+				intoTokyoBay = true; // WHAT IF TOKYO CITY PLAYER YIELDED?
+			}
+
+			// YIELD QUESTION
+			let setShowYieldModal = false;
+			if (diceResults.damageDealt > 0) {
+				const tokyoCityPlayer = players.find(player => player.inTokyoCity);
+				if (tokyoCityPlayer.health - diceResults.damageDealt > 0) {
+					yieldTokyoCity = true;
+				}
+			}
+			
+			// UPDATE PLAYERS
+			const updatedPlayers = players.map((player) => {
+				if (player === currentPlayer) return updatedCurrentPlayer;
+				if (player.inTokyoCity) {
+					return {
+						...player, 
+						health: player.health - diceResults.damageDealt
+					};
+				}
+				return player;
+			})
+			
+			return {
+				...state, 
+				players: updatedPlayers,
+				tokyoBayOccupied: intoTokyoBay,
+				showYieldModal: setShowYieldModal,
+				showYieldTokyoCityModal: yieldTokyoCity,
+				showYieldTokyoBayModal: yieldTokyoBay,
+			}
+		}
+		// 6. CURRENT PLAYER NOT IN TOKYO, ONE PLAYER IN TOKYO CITY, ONE PLAYER IN TOKYO BAY
+		if (!action.payload.inTokyoCity 
+			&& !action.payload.inTokyoBay 
+			&& tokyoCityOccupied 
+			&& tokyoBayOccupied) 
+		{
+			const currentPlayer = action.payload;
+			const {
+				players, 
+				diceResults,
+			} = state;
+			
+			// UPDATE HEALTH
+			let newHealth = currentPlayer.health + diceResults.healthGained;
+			if (newHealth > 10) newHealth = 10;
+
+			// UPDATE PLAYER
+			let updatedCurrentPlayer = {
+				...currentPlayer, 
+				points: currentPlayer.points + diceResults.points,
+				health: newHealth,
+			};
+
+			// YIELD QUESTION
+			let setShowYieldModal = false;
+			if (diceResults.damageDealt > 0) {
+				const tokyoCityPlayer = players.find(player => player.inTokyoCity);
+				console.log('tokyoCityPlayer: ',tokyoCityPlayer);
+				const tokyoBayPlayer = players.find(player => player.inTokyoBay);
+				// console.log('health: ',tokyoCityPlayer.health)
+				if (tokyoCityPlayer) {
+					if (tokyoCityPlayer.health - diceResults.damageDealt > 0) {
+						setShowYieldModal = true;
+					}
+
+				}
+			}
+			
+			// UPDATE PLAYERS
+			const updatedPlayers = players.map((player) => {
+				if (player === currentPlayer) return updatedCurrentPlayer;
+				if (player.inTokyoCity || player.inTokyoBay) {
+					return {
+						...player,
+						health: player.health - diceResults.damageDealt,
+					};
+				}
+				return player;
+			})
+			
+			return {
+				...state, 
+				players: updatedPlayers,
+				showYieldModal: setShowYieldModal,
+			}
+		} 
+	}
+
 	if (action.type === 'UPDATE_PLAYERS') {
 		// if it's now the turn of the player in tokyo, add 2 points
 		let nextPlayerIndex = state.currentPlayerIndex + 1;
@@ -198,7 +454,7 @@ const reducer = (state, action) => {
 			nextPlayerIndex = 0;
 		}
 		const newPlayers = state.players.map((player, i) => {
-			if (player.inTokyo && nextPlayerIndex === i) {
+			if ((player.inTokyoCity && nextPlayerIndex === i) || (player.inTokyoBay && nextPlayerIndex === i)) {
 				return {...player, points: player.points + 2}
 			}
 			return player;
@@ -210,6 +466,9 @@ const reducer = (state, action) => {
 	}
 
 	if (action.type === 'UPDATE_PLAYERS__CURRENT_PLAYER_IN_TOKYO') {
+		// If in Tokyo, 
+		// add points to current player 
+		// and take damage from everyone else
 		const updatedPlayers = state.players.map((player, i) => {
 			if (i === state.currentPlayerIndex) {
 				return {...player, points: player.points + state.diceResults.points};

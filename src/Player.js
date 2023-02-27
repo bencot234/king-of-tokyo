@@ -1,9 +1,9 @@
 import { FaStar } from 'react-icons/fa';
 import { AiFillHeart } from 'react-icons/ai';
 
-const Player = ({name, points, health, inTokyo, isTurn, monster}) => {
+const Player = ({name, points, health, inTokyo, isTurn, monster, inTokyoCity, inTokyoBay}) => {
 	return (
-		<div className={`${isTurn ? 'animate__animated animate__pulse' : inTokyo ? 'player-in-tokyo' : ''} image-container`}>
+		<div className={`${isTurn ? 'animate__animated animate__pulse' : inTokyo || inTokyoCity || inTokyoBay ? 'player-in-tokyo' : ''} image-container`}>
 			<img className={`${monster.name}-image image ${isTurn ? 'selected-image' : ''}`} src={monster.image} alt={monster.name} />
 			<div className={`player-container ${isTurn ? 'player-is-turn' : ''}`}>
 				<h2>{name}</h2>
